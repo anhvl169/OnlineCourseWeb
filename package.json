@@ -5,11 +5,14 @@
     "description": "MERN Stack Application",
     "main": "index.js",
     "scripts": {
-        "client": "cd client && npm start",
+        "client": "cd OnlineCourse && npm start",
         "server": "cd server && npm start",
         "dev": "concurrently \"npm run server\" \"npm run client\""
     },
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "passport": "^0.7.0"
+    }
 }

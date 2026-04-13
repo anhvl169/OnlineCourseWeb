@@ -1,21 +1,18 @@
-const jwt = require('jsonwebtoken');
+// middlewares/auth.middleware.js
+const { verifyToken } = require('../utils/jwt');
 
-const verifyToken = (req, res, next) => {
-    const authHeader = req.headers['authorization'];
-
-    if (!authHeader) {
-        return res.status(401).json({ message: "Không có token" });
-    }
-
-    const token = authHeader.split(' ')[1];
-
+const authMiddleware = (req, res, next) => {
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded; // gắn vào request
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) throw new Error('No token');
+
+        const decoded = verifyToken(token);
+
+        req.user = decoded; // { userId, roles }
         next();
     } catch (err) {
-        return res.status(403).json({ message: "Token không hợp lệ" });
+        res.status(401).json({ message: 'Unauthorized' });
     }
 };
 
-module.exports = { verifyToken };
+module.exports = { authMiddleware };

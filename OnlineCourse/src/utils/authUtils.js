@@ -10,11 +10,8 @@ export const getUserFromToken = () => {
     try {
         const token = getToken();
         if (!token) return null;
-        
-        const decoded = jwtDecode(token);
-        return decoded;
-    } catch (err) {
-        console.error("Error decoding token:", err);
+        return jwtDecode(token);
+    } catch {
         return null;
     }
 };
@@ -22,20 +19,22 @@ export const getUserFromToken = () => {
 // Lấy user role
 export const getUserRole = () => {
     const user = getUserFromToken();
-    return user?.role || null;
+    return user?.roles || [];
 };
 
 export const hasRole = (roles) => {
     const user = getUserFromToken();
-    
-    if (!user) return false;
 
-    return roles.includes(user.role);
+    if (!user || !user.roles) return false;
+
+    const userRoles = user.roles.map(r => r.toLowerCase());
+
+    return roles.some(role => userRoles.includes(role.toLowerCase()));
 };
 // Lấy user id
 export const getUserId = () => {
     const user = getUserFromToken();
-    return user?.id || null;
+    return user?.userId || null;
 };
 
 // Lấy user name
@@ -46,7 +45,10 @@ export const getUserName = () => {
 
 // Check xem user đã đăng nhập chưa
 export const isAuthenticated = () => {
-    return !!getToken();
+    const user = getUserFromToken();
+    if (!user) return false;
+
+    return user.exp > Date.now() / 1000;
 };
 
 // Logout

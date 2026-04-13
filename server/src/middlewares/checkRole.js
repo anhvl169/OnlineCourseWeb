@@ -1,11 +1,13 @@
 const checkRole = (...allowedRoles) => {
     return (req, res, next) => {
-        if (!req.user) {
-            return res.status(401).json({ message: "Chưa xác thực" });
-        }
+        const userRoles = req.user.roles;
 
-        if (!allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({ message: "Không có quyền truy cập" });
+        const hasRole = allowedRoles.some(role =>
+            userRoles.includes(role)
+        );
+
+        if (!hasRole) {
+            return res.status(403).json({ message: 'Forbidden' });
         }
 
         next();

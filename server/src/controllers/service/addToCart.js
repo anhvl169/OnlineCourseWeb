@@ -3,7 +3,7 @@ const { sql } = require('../../config/db');
 
 const addToCart = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user.userId;
         const { courseId, price } = req.body;
 
         if (!courseId || !price) {

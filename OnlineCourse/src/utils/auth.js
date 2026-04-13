@@ -24,5 +24,5 @@ export const hasRole = (roles) => {
     
     if (!user) return false;
 
-    return roles.includes(user.role);
+    return roles.some(role => user.roles.includes(role));
 };

@@ -16,7 +16,7 @@ export default function CourseCard({ course, instructors, categories }) {
         }
     };
     return (
-        <div className="card mt-3"
+        <div className="card mt-4 mb-4 shadow-sm border-0"
             style={{ width: "18rem" }}
             key={course.course_id}>
             <img src={course.imgUrl} className="card-img-top" alt="..." />
@@ -35,16 +35,21 @@ export default function CourseCard({ course, instructors, categories }) {
                 </p>
             </div>
             <ul className="list-group list-group-flush">
-                {
-                    categories.map(cate => {
-                        if (cate.category_id === course.category_id) {
-                            return (
-                                <strong>Category :<h6><span className="badge bg-secondary" key={cate.category_id}>{cate.name}</span></h6></strong>
-                            )
-                        }
-                    })
-                }
                 <li className="list-group-item">
+                    <strong>Category :</strong>
+                    {
+                        categories.map(cate => {
+                            if (cate.category_id === course.category_id) {
+                                return (
+                                    <span className="badge bg-secondary" key={cate.category_id}>{cate.name}</span>
+                                )
+                            }
+                        })
+                    }
+                </li>
+
+                <li className="list-group-item">
+                    <strong>Status: </strong>
                     {course.status === 'active' ? (
                         <span className="badge bg-success">Active</span>
                     ) : (

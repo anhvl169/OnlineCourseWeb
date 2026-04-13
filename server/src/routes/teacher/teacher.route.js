@@ -7,9 +7,9 @@ const router = express.Router();
 router.get(
     '/',
     authMiddleware,
-    checkRole(['admin']),
+    checkRole(['teacher', 'admin']),
     (req, res) => {
-        res.json({ message: "Admin access" });
+        res.json({ message: "Teacher and Admin access" });
     }
 );
 

@@ -1,15 +1,13 @@
 const express = require('express');
 const { authMiddleware } = require('../../middlewares/verifyToken');
-const { checkRole } = require('../../middlewares/checkRole');
 
 const router = express.Router();
 
 router.get(
     '/',
     authMiddleware,
-    checkRole(['admin']),
     (req, res) => {
-        res.json({ message: "Admin access" });
+        res.json({ message: "User access" });
     }
 );
 

@@ -10,25 +10,52 @@ export default function CourseList() {
     const [instructors, setInstructors] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("");
-    useEffect(() => {
-        const fetchCourses = async () => {
-            try {
-                const courseres = await axios.get("http://localhost:5000/api/courses");
-                setCourses(courseres.data);
-            } catch (error) {
-                console.error("Error fetching courses:", error);
-            }
-        };
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: 8,
+        totalItems: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPrevPage: false
+    });
 
-        fetchCourses();
-    }, []);
+    const fetchCourses = async (page) => {
+        try {
+            const res = await axios.get(
+                `http://localhost:5000/api/courses`,
+                {
+                    params: {
+                        page: page,
+                        limit: 8,
+                        search: searchTerm,
+                        category: selectedCategory
+                    }
+                }
+            );
+
+            setCourses(res.data.data);
+            setPagination(res.data.pagination);
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, selectedCategory]);
+
+    useEffect(() => {
+        fetchCourses(currentPage);
+    }, [currentPage, searchTerm, selectedCategory]);
 
     useEffect(() => {
         const fetchCate = async () => {
             try {
 
-                const cateres = await axios.get("http://localhost:5000/api/categories");
-                setCategories(cateres.data);
+                const cateData = await axios.get("http://localhost:5000/api/categories");
+                setCategories(cateData.data);
             } catch (error) {
                 console.error("Error fetching courses:", error);
             }
@@ -40,7 +67,7 @@ export default function CourseList() {
     useEffect(() => {
         const fetchInstructor = async () => {
             try {
-                const instructorres = await axios.get("http://localhost:5000/api/instructors");
+                const instructorres = await axios.get("http://localhost:5000/api/courses/instructors");
                 setInstructors(instructorres.data);
             } catch (error) {
                 console.error("Error fetching instructors:", error);
@@ -58,11 +85,7 @@ export default function CourseList() {
     };
 
     // Filter courses based on search term and selected category
-    const filteredCourses = courses.filter(course => {
-        const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === "" || course.category_id === parseInt(selectedCategory);
-        return matchesSearch && matchesCategory;
-    });
+    const filteredCourses = courses;
 
     return (
         <div className="container">
@@ -77,7 +100,7 @@ export default function CourseList() {
             </div>
 
             {/* Courses Grid */}
-            <div className="row lg-4">
+            <div className="row">
                 {
                     filteredCourses.length > 0 ? (
                         filteredCourses.map(course => (
@@ -91,6 +114,30 @@ export default function CourseList() {
                         </div>
                     )
                 }
+            </div>
+
+            <div className="d-flex justify-content-center mt-4 gap-2">
+
+                <button
+                    className="btn btn-secondary"
+                    disabled={!pagination.hasPrevPage}
+                    onClick={() => setCurrentPage(prev => prev - 1)}
+                >
+                    Prev
+                </button>
+
+                <span className="align-self-center">
+                    Page {currentPage} / {pagination.totalPages}
+                </span>
+
+                <button
+                    className="btn btn-primary"
+                    disabled={!pagination.hasNextPage}
+                    onClick={() => setCurrentPage(prev => prev + 1)}
+                >
+                    Next
+                </button>
+
             </div>
 
         </div>

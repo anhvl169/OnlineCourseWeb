@@ -1,50 +1,37 @@
-// src/controllers/authController.js
-const { sql } = require('../../config/db');
+// controllers/auth.controller.js
+const authService = require('./../../services/auth.service');
 
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const { generateToken } = require('../../utils/jwt');
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        const data = await authService.loginWithEmailAndPass(email, password);
 
-        if (!email || !password) {
-            return res.status(400).json({ message: "Thiếu dữ liệu" });
-        }
-
-        const result = await new sql.Request()
-            .input('email', sql.VarChar, email)
-            .query("SELECT * FROM Users WHERE email = @email");
-
-        const user = result.recordset[0];
-
-        if (!user) {
-            return res.status(401).json({ message: "Không tìm thấy user" });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-
-        if (!isMatch) {
-            return res.status(401).json({ message: "Sai mật khẩu" });
-        }
-
-        const token = generateToken(user);
-
-        res.json({
-            message: "Login thành công",
-            token,
-            user: {
-                id: user.user_id,
-                name: user.name,
-                email: user.email,
-                role: user.type
-            }
-        });
-
+        res.json(data);
+        console.log("Login successful for user:", data.user.name);
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ message: "Server error" });
+        res.status(401).json({ message: err.message });
     }
 };
 
-module.exports = { login };
+const googleCallback = async (req, res) => {
+    try {
+        const profile = req.user;
+
+        if (!profile) {
+            return res.status(400).json({ message: 'Google authentication failed' });
+        }
+
+        const { token, isNewUser, roles } = await authService.loginWithGoogle(profile);
+
+        if (isNewUser || roles.length === 0) {
+            return res.redirect(`http://localhost:3000/onboarding?token=${token}`);
+        }
+
+        res.redirect(`http://localhost:3000?token=${token}`);
+    } catch (err) {
+        console.error('Google login error:', err);
+        res.status(500).json({ message: err.message });
+    }
+};
+
+module.exports = { login, googleCallback};

@@ -3,7 +3,7 @@ const { sql } = require('../../config/db');
 
 const getCartItems = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user.userId;
 
         // 1. Lấy cart
         const cartResult = await new sql.Request()

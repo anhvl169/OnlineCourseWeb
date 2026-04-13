@@ -3,7 +3,7 @@ const { sql } = require('../../config/db');
 
 const removeFromCart = async (req, res) => {
     try {
-        const userId = req.user.id;
+        const userId = req.user.userId;
         const { cartItemId } = req.params;
 
         if (!cartItemId) {

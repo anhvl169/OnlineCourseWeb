@@ -5,6 +5,7 @@ const {
     calculateOffset,
     createPaginationLinks
 } = require('../../utils/pagination');
+const courseRepo = require('../../repositories/course.repo');
 const getAllCourses = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -14,43 +15,12 @@ const getAllCourses = async (req, res) => {
 
         const offset = calculateOffset(page, limit);
 
-        const request = new sql.Request();
-
-        request.input('offset', sql.Int, offset);
-        request.input('limit', sql.Int, limit);
-        request.input('search', sql.NVarChar, search);
-        request.input('category', sql.Int, category || null);
-
-        const dataResult = await request.query(`
-            SELECT *
-            FROM Course
-            WHERE 
-                (@search = '' OR title LIKE '%' + @search + '%')
-                AND (@category IS NULL OR category_id = @category)
-            ORDER BY course_id
-            OFFSET @offset ROWS
-            FETCH NEXT @limit ROWS ONLY
-        `);
-
-        const countRequest = new sql.Request();
-
-        countRequest.input('search', sql.NVarChar, search);
-        countRequest.input('category', sql.Int, category || null);
-
-        const countResult = await countRequest.query(`
-            SELECT COUNT(*) as totalItems
-            FROM Course
-            WHERE 
-                (@search = '' OR title LIKE '%' + @search + '%')
-                AND (@category IS NULL OR category_id = @category)
-        `);
-
-        const totalItems = countResult.recordset[0].totalItems;
-
+        const courses = await courseRepo.getCourses(search, category, offset, limit);
+        const totalItems = await courseRepo.countCourses(search, category);
         const pagination = createPagination(page, limit, totalItems);
 
         res.json({
-            data: dataResult.recordset,
+            data: courses,
             pagination
         });
 

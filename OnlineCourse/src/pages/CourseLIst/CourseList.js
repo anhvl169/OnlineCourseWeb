@@ -88,59 +88,58 @@ export default function CourseList() {
     const filteredCourses = courses;
 
     return (
-        <div className="container">
-            <h1>Course List</h1>
-
-            {/* Course Navigation with Search and Filter */}
-            <CourseNav categories={categories} onFilterChange={handleFilterChange} />
-
-            {/* Results Count */}
-            <div className="mb-3">
-                <p className="text-muted">Showing {filteredCourses.length} course(s)</p>
+        <div className="container py-5">
+            {/* Header Section */}
+            <div className="row align-items-center mb-5">
+                <div className="col-md-6">
+                    <h2 className="fw-bold mb-0">Khám phá khóa học</h2>
+                    <p className="text-muted">Nâng cao kỹ năng với các chuyên gia hàng đầu</p>
+                </div>
+                <div className="col-md-6 text-md-end">
+                    <CourseNav categories={categories} onFilterChange={handleFilterChange} />
+                </div>
             </div>
 
             {/* Courses Grid */}
-            <div className="row">
-                {
-                    filteredCourses.length > 0 ? (
-                        filteredCourses.map(course => (
-                            <div className="col-md-3" key={course.course_id}>
-                                <CourseCard course={course} instructors={instructors} categories={categories} />
-                            </div>
-                        ))
-                    ) : (
-                        <div className="col-12">
-                            <p className="text-center text-muted">No courses found matching your search criteria.</p>
+            <div className="row g-4">
+                {courses.length > 0 ? (
+                    courses.map(course => (
+                        <div className="col-12 col-sm-6 col-lg-3" key={course.course_id}>
+                            <CourseCard course={course} instructors={instructors} categories={categories} />
                         </div>
-                    )
-                }
+                    ))
+                ) : (
+                    <div className="text-center py-5">
+                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="100" alt="empty" className="opacity-50 mb-3" />
+                        <p className="text-muted">Không tìm thấy khóa học nào phù hợp.</p>
+                    </div>
+                )}
             </div>
 
-            <div className="d-flex justify-content-center mt-4 gap-2">
-
-                <button
-                    className="btn btn-secondary"
-                    disabled={!pagination.hasPrevPage}
-                    onClick={() => setCurrentPage(prev => prev - 1)}
-                >
-                    Prev
-                </button>
-
-                <span className="align-self-center">
-                    Page {currentPage} / {pagination.totalPages}
-                </span>
-
-                <button
-                    className="btn btn-primary"
-                    disabled={!pagination.hasNextPage}
-                    onClick={() => setCurrentPage(prev => prev + 1)}
-                >
-                    Next
-                </button>
-
-            </div>
-
+            {/* Pagination Hiện đại */}
+            {pagination.totalPages > 1 && (
+                <nav className="mt-5">
+                    <ul className="pagination justify-content-center border-0">
+                        <li className={`page-item ${!pagination.hasPrevPage ? 'disabled' : ''}`}>
+                            <button className="page-link rounded-circle mx-1 border-0 shadow-sm" onClick={() => setCurrentPage(p => p - 1)}>
+                                <i className="bi bi-chevron-left"></i>
+                            </button>
+                        </li>
+                        {[...Array(pagination.totalPages)].map((_, i) => (
+                            <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
+                                <button className="page-link rounded-circle mx-1 border-0 shadow-sm" onClick={() => setCurrentPage(i + 1)}>
+                                    {i + 1}
+                                </button>
+                            </li>
+                        ))}
+                        <li className={`page-item ${!pagination.hasNextPage ? 'disabled' : ''}`}>
+                            <button className="page-link rounded-circle mx-1 border-0 shadow-sm" onClick={() => setCurrentPage(p => p + 1)}>
+                                <i className="bi bi-chevron-right"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+            )}
         </div>
     );
-
 }

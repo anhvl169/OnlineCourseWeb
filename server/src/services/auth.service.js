@@ -49,7 +49,41 @@ const loginWithGoogle = async (profile) => {
         roles
     });
 
-    return { user, token, isNewUser , roles};
+    return { user, token, isNewUser, roles };
 };
+const register = async ({ name, email, password }) => {
 
-module.exports = { loginWithEmailAndPass, loginWithGoogle };
+    const existingUser = await userRepo.findByEmail(email);
+    if (existingUser) {
+        throw new Error("Email already exists");
+    }
+
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+
+    const userId = await userRepo.createUser({
+        name,
+        email,
+        password: hashedPassword,
+        google_id: null
+    });
+
+
+    await userRepo.assignRole(userId, 'Student');
+
+
+    const roles = await userRepo.getRolesByUserId(userId);
+
+    const token = signToken({
+        userId,
+        name,
+        roles
+    });
+
+    return {
+        user: { userId, name, email },
+        token
+    };
+};
+module.exports = { loginWithEmailAndPass, loginWithGoogle, register };

@@ -1,0 +1,40 @@
+.auth-wrapper {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 420px;
+    border-radius: 20px;
+}
+
+.auth-card .form-control {
+    padding: 12px;
+    font-size: 15px;
+}
+
+.auth-card .form-control:focus {
+    background-color: #fff;
+    border-color: #0d6efd;
+}
+
+.auth-card .input-group-text {
+    border: 1px solid #dee2e6;
+}
+
+.divider hr {
+    border-top: 1px solid #dee2e6;
+    opacity: 1;
+}
+
+/* Hiệu ứng hover cho các nút */
+.btn-primary {
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+}

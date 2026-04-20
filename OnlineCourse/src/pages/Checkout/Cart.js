@@ -30,7 +30,7 @@ export default function Cart() {
                     <h5>Giỏ hàng trống</h5>
                     <button
                         className="btn btn-primary mt-3"
-                        onClick={() => navigate('/courses')}
+                        onClick={() => navigate('/')}
                     >
                         Khám phá khóa học
                     </button>
@@ -64,7 +64,7 @@ export default function Cart() {
                                                 Khóa học chất lượng cao
                                             </p>
                                             <span className="fw-bold text-success">
-                                                ${item.price}
+                                                {item.price}đ
                                             </span>
                                         </div>
                                     </div>
@@ -100,13 +100,13 @@ export default function Cart() {
                                 <div className="d-flex justify-content-between">
                                     <strong>Tổng</strong>
                                     <strong className="text-success">
-                                        ${total.toFixed(2)}
+                                        {total.toFixed(2)}đ
                                     </strong>
                                 </div>
 
-                                <button className="btn btn-primary w-100 mt-3">
+                                <button className="btn btn-primary w-100 mt-3"><a href="/checkout" className="text-decoration-none text-white">
                                     Thanh toán
-                                </button>
+                                </a></button>
                             </div>
                         </div>
                     </div>

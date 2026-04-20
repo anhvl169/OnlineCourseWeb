@@ -1,5 +1,60 @@
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
+/* Tùy chỉnh màu sắc và đổ bóng */
+.main-header .navbar {
+    padding: 0.8rem 0;
+    transition: all 0.3s ease;
+}
+
+.nav-link {
+    color: #444 !important;
+    transition: color 0.2s;
+}
+
+.nav-link:hover {
+    color: #0d6efd !important;
+}
+
+/* Thanh tìm kiếm */
+.search-box {
+    width: 100%;
+    max-width: 400px;
+}
+
+.search-box .form-control {
+    border-radius: 20px 0 0 20px;
+    background-color: #f8f9fa;
+}
+
+.search-box .btn {
+    border-radius: 0 20px 20px 0;
+    background-color: #f8f9fa;
+}
+
+/* Avatar nhỏ cho User */
+.avatar-sm {
+    width: 30px;
+    height: 30px;
+    background-color: #0d6efd;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    border-radius: 12px;
+    min-width: 200px;
+}
+
+.dropdown-item:hover {
+    background-color: #f1f4f9;
+}
+
+/* Badge số lượng giỏ hàng */
+.badge {
+    font-size: 0.65rem;
+    padding: 0.35em 0.5em;
 }

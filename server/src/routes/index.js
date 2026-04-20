@@ -7,6 +7,7 @@ const cartRoutes = require('./service/cart.route');
 const categoryRoutes = require('./course/category.route');
 const courseRoutes = require('./course/course.route');
 const userRoutes = require('./user/user.route');
+const createPaymentLinkRoute = require('./payment/CollectionLink');
 const router = express.Router();
 
 
@@ -17,7 +18,7 @@ router.use('/cart', cartRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/courses', courseRoutes);
 router.use('/users', userRoutes);
-
+router.use('/payment', createPaymentLinkRoute);
 const { authMiddleware } = require('../middlewares/verifyToken');
 router.get('/profile', authMiddleware, (req, res) => {
     res.json({

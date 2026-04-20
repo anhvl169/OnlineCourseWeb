@@ -6,6 +6,8 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import AdminBoard from './pages/AdminDashBoard/AdminBoard';
 import TeacherBoard from './pages/TeacherDashBoard/TeacherBoard';
 import Cart from './pages/Checkout/Cart';
+import Checkout from './pages/Checkout/Checkout';
+import PaymentResult from './pages/Checkout/PaymentResult';
 import { CartProvider } from './context/CartContext';
 import AuthCallbackPage from './pages/Login/AuthCallbackPage';
 import CourseDetail from './pages/CourseList/CourseDetail';
@@ -14,18 +16,18 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 function App() {
   return (
-    <BrowserRouter>
-      <CartProvider>
-        <div className="App">
+    <div className="App">
+      <BrowserRouter>
+        <CartProvider>
           <Routes>
-            {/* public route */}
-
             {/* auth route */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
             <Route path="/" element={<Layout><CourseList /></Layout>} />
             <Route path="/cart" element={<Layout><Cart /></Layout>} />
+            <Route path="/checkout" element={<Layout><Checkout /></Layout>} />
+            <Route path="/payment-result" element={<PaymentResult />} />
             {/* course route */}
             <Route path="/courses/detail/:id" element={<Layout><CourseDetail /></Layout>} />
 
@@ -45,9 +47,9 @@ function App() {
             </Route>
 
           </Routes>
-        </div>
-      </CartProvider>
-    </BrowserRouter>
+        </CartProvider>
+      </BrowserRouter >
+    </div >
   );
 }
 

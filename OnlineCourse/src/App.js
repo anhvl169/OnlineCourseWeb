@@ -7,7 +7,6 @@ import AdminBoard from './pages/AdminDashBoard/AdminBoard';
 import TeacherBoard from './pages/TeacherDashBoard/TeacherBoard';
 import Cart from './pages/Checkout/Cart';
 import { CartProvider } from './context/CartContext';
-import MiniGame from './pages/Home/MiniGame';
 import AuthCallbackPage from './pages/Login/AuthCallbackPage';
 import CourseDetail from './pages/CourseList/CourseDetail';
 import Register from './pages/Register/Register';
@@ -20,7 +19,6 @@ function App() {
         <div className="App">
           <Routes>
             {/* public route */}
-            <Route path='/game' element={<Layout><MiniGame /></Layout>} />
 
             {/* auth route */}
             <Route path="/login" element={<Login />} />

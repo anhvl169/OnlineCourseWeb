@@ -71,9 +71,141 @@ const assignRole = async (userId, roleName) => {
     }
 };
 
+const getUserProfile = async (userId) => {
+    try {
+        const result = await new sql.Request()
+            .input('userId', sql.Int, userId)
+            .query('SELECT user_id, name, email, phone, address, bio, status FROM Users WHERE user_id = @userId');
+
+        if (result.recordset.length === 0) {
+            return null;
+        }
+
+        return result.recordset[0];
+    } catch (err) {
+        console.error('Database error at getUserProfile:', err);
+        throw new Error('Database error');
+    }
+};
+
+const updateUserProfile = async (userId, profileData) => {
+    try {
+        const result = await new sql.Request()
+            .input('userId', sql.Int, userId)
+            .input('name', sql.NVarChar, profileData.name)
+            .input('phone', sql.VarChar, profileData.phone)
+            .input('address', sql.NVarChar, profileData.address)
+            .input('bio', sql.NVarChar, profileData.bio)
+            .query(`
+                UPDATE Users 
+                SET name = @name, phone = @phone, address = @address, bio = @bio
+                WHERE user_id = @userId
+                SELECT user_id, name, email, phone, address, bio FROM Users WHERE user_id = @userId
+            `);
+
+        if (result.recordset.length === 0) {
+            return null;
+        }
+
+        return result.recordset[0];
+    } catch (err) {
+        console.error('Database error at updateUserProfile:', err);
+        throw new Error('Database error');
+    }
+};
+
+const getEnrolledCourses = async (userId) => {
+    try {
+        const result = await new sql.Request()
+            .input('userId', sql.Int, userId)
+            .query(`
+                SELECT 
+                    e.enrollment_id,
+                    e.course_id,
+                    e.purchase_date,
+                    e.progress,
+                    c.title,
+                    c.description,
+                    c.price,
+                    c.imgUrl,
+                    u.name AS instructor_name
+                FROM Enrollment e
+                JOIN Course c ON e.course_id = c.course_id
+                LEFT JOIN Users u ON c.instructor_id = u.user_id
+                WHERE e.user_id = @userId
+                ORDER BY e.purchase_date DESC
+            `);
+
+        return result.recordset;
+    } catch (err) {
+        console.error('Database error at getEnrolledCourses:', err);
+        throw new Error('Database error');
+    }
+};
+
+const getUserInvoices = async (userId) => {
+    try {
+        const result = await new sql.Request()
+            .input('userId', sql.Int, userId)
+            .query(`
+                SELECT 
+                    i.invoice_id,
+                    i.user_id,
+                    i.coupon_id,
+                    i.total_amount,
+                    i.discount_amount,
+                    i.final_amount,
+                    i.payment_method,
+                    i.payment_status,
+                    i.created_at,
+                    i.updated_at,
+                    i.order_id
+                FROM Invoice i
+                WHERE i.user_id = @userId
+                ORDER BY i.created_at DESC
+            `);
+
+        return result.recordset;
+    } catch (err) {
+        console.error('Database error at getUserInvoices:', err);
+        throw new Error('Database error');
+    }
+};
+
+const getInvoiceItems = async (invoiceId) => {
+    try {
+        const result = await new sql.Request()
+            .input('invoiceId', sql.Int, invoiceId)
+            .query(`
+                SELECT 
+                    ii.invoice_item_id,
+                    ii.invoice_id,
+                    ii.course_id,
+                    ii.price,
+                    ii.created_at,
+                    c.title,
+                    c.description,
+                    c.imgUrl
+                FROM Invoice_Item ii
+                JOIN Course c ON ii.course_id = c.course_id
+                WHERE ii.invoice_id = @invoiceId
+            `);
+
+        return result.recordset;
+    } catch (err) {
+        console.error('Database error at getInvoiceItems:', err);
+        throw new Error('Database error');
+    }
+};
+
 module.exports = {
     findByEmail,
     createUser,
     getRolesByUserId,
-    assignRole
+    assignRole,
+    getUserProfile,
+    updateUserProfile,
+    getEnrolledCourses,
+    getUserInvoices,
+    getInvoiceItems
 };

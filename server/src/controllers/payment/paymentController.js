@@ -18,12 +18,6 @@ const createPaymentLink = async (req, res) => {
         let { amount, items, orderInfo, paymentMethod } = req.body;
         const user = req.user;
 
-        console.log('Extracted from req.body:');
-        console.log('  amount:', amount);
-        console.log('  amount type:', typeof amount);
-        console.log('  items count:', items?.length || 0);
-        console.log('🔴🔴🔴 === END REQUEST === 🔴🔴🔴\n');
-
         if (!user) {
             return res.status(401).json({
                 success: false,
@@ -40,9 +34,11 @@ const createPaymentLink = async (req, res) => {
 
         const amountStr = String(Math.round(Number(amount)));
 
+        console.log('User from token:', user);
+
         // invoice DB
         const invoiceId = await orderRepo.createInvoice({
-            user_id: user.user_id,
+            user_id: user.userId,
             coupon_id: null,
             total_amount: Number(amountStr),
             discount_amount: 0,

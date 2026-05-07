@@ -17,6 +17,9 @@ export default function Checkout() {
     const [error, setError] = useState(null);
     const [paymentStarted, setPaymentStarted] = useState(false);
     const [redirectUrl, setRedirectUrl] = useState(null);
+    const [qrImage, setQrImage] = useState(null);
+    const [orderId, setOrderId] = useState(null);
+    const [invoiceId, setInvoiceId] = useState(null);
 
     const paymentMethod = location.state?.method || "momo";
 
@@ -55,7 +58,6 @@ export default function Checkout() {
         setError(null);
 
         try {
-
             const requestPayload = {
                 amount: total,
                 items: cart.map(item => ({
@@ -86,17 +88,38 @@ export default function Checkout() {
 
             const paymentData = data.data || data;
             const payUrl = paymentData?.payUrl || data?.payUrl;
-            const invoiceId = paymentData?.invoiceId || data?.invoiceId;
-            const orderId = paymentData?.orderId;
+            const invoiceIdFromResponse = paymentData?.invoiceId || data?.invoiceId;
+            const pOrderId = paymentData?.orderId;
             const amount = paymentData?.amount;
 
-            if (data.success && payUrl) {
-                sessionStorage.setItem('lastInvoiceId', invoiceId);
-                if (orderId) sessionStorage.setItem('lastOrderId', orderId);
+            if (data.success) {
+                sessionStorage.setItem('lastInvoiceId', invoiceIdFromResponse);
+                setInvoiceId(invoiceIdFromResponse);
+                if (pOrderId) {
+                    sessionStorage.setItem('lastOrderId', pOrderId);
+                    setOrderId(pOrderId);
+                }
                 console.log('Payment link created successfully!');
                 if (amount) console.log('Confirmed amount:', amount);
-                setRedirectUrl(payUrl);
-                setLoading(false);
+
+                if (paymentMethod === "qr") {
+                    // Generate QR code URL using VietQR API
+                    const accountName = "VU LE ANH";
+                    const bankCode = "970423";
+                    const accountNumber = "00000111905";
+                    const reference = "utajn2T";
+                    const addInfo = pOrderId || (currentUser?.email || 'guest');
+                    
+                    const qrUrl = `https://api.vietqr.io/image/${bankCode}-${accountNumber}-${reference}.jpg?accountName=${encodeURIComponent(accountName)}&amount=${total}&addInfo=${encodeURIComponent(addInfo)}`;
+                    setQrImage(qrUrl);
+                    setLoading(false);
+                } else if (payUrl) {
+                    setRedirectUrl(payUrl);
+                    setLoading(false);
+                } else {
+                    setError("Không thể lấy link thanh toán");
+                    setTimeout(() => navigate('/cart'), 3000);
+                }
             } else {
                 setError(data.message || "Không tạo được link thanh toán");
                 setTimeout(() => navigate('/cart'), 3000);
@@ -156,6 +179,49 @@ export default function Checkout() {
                                     </button>
                                     <button
                                         className="btn btn-outline-secondary btn-sm w-100 mt-3"
+                                        onClick={() => navigate('/cart')}
+                                    >
+                                        Quay lại giỏ hàng
+                                    </button>
+                                </>
+                            )}
+
+                            {!loading && !error && qrImage && (
+                                <>
+                                    <i className="bi bi-qr-code text-primary display-1"></i>
+                                    <h5 className="card-title mt-3 mb-3">✅ Mã QR Thanh Toán</h5>
+                                    <p className="text-muted mb-3">Quét mã QR bằng ứng dụng ngân hàng để hoàn tất thanh toán</p>
+                                    <div className="text-center mb-4">
+                                        <img 
+                                            src={qrImage} 
+                                            alt="QR Code" 
+                                            style={{
+                                                maxWidth: '300px',
+                                                width: '100%',
+                                                border: '1px solid #ddd',
+                                                padding: '10px',
+                                                borderRadius: '8px'
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="text-start bg-light p-3 rounded mb-3">
+                                        <p className="mb-2"><strong>Thông tin chuyển khoản:</strong></p>
+                                        <p className="mb-2">
+                                            <span className="text-muted">Số tiền:</span> <strong>{total.toLocaleString('vi-VN')} VND</strong>
+                                        </p>
+                                        <p className="mb-2">
+                                            <span className="text-muted">Nội dung:</span> <strong>{orderId || (currentUser?.email || 'Thanh toán khóa học')}</strong>
+                                        </p>
+                                        <p className="mb-0">
+                                            <span className="text-muted">Ngân hàng:</span> <strong>TP Bank</strong>
+                                        </p>
+                                    </div>
+                                    <div className="alert alert-info mb-3" role="alert">
+                                        <i className="bi bi-info-circle me-2"></i>
+                                        Vui lòng chuyển khoản và chờ hệ thống xác nhận trong giây lát
+                                    </div>
+                                    <button
+                                        className="btn btn-outline-secondary btn-sm w-100"
                                         onClick={() => navigate('/cart')}
                                     >
                                         Quay lại giỏ hàng

@@ -87,6 +87,20 @@ const getUserProfile = async (userId) => {
         throw new Error('Database error');
     }
 };
+const getPublicUserProfile = async (userId) => {
+    try {
+        const result = await new sql.Request()
+            .input('userId', sql.Int, userId)
+            .query('SELECT user_id, name, email, address, bio, status FROM Users WHERE user_id = @userId');
+        if (result.recordset.length === 0) {
+            return null;
+        }
+        return result.recordset[0];
+    } catch (err) {
+        console.error('Database error at getPublicUserProfile:', err);
+        throw new Error('Database error');
+    }
+};
 
 const updateUserProfile = async (userId, profileData) => {
     try {
@@ -207,5 +221,6 @@ module.exports = {
     updateUserProfile,
     getEnrolledCourses,
     getUserInvoices,
-    getInvoiceItems
+    getInvoiceItems,
+    getPublicUserProfile
 };

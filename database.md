@@ -1,281 +1,157 @@
-# OnlineCoursesDB - Database Documentation
+# Messaging Feature - Database Tables
 
 ## Overview
-OnlineCoursesDB là một hệ thống quản lý khóa học trực tuyến với các tính năng mua hàng, quản lý người dùng, theo dõi tiến trình học tập và quản lý vai trò.
+The messaging system enables real-time 1-on-1 and group conversations between users. It consists of three core tables that manage conversations, members, and messages.
 
 ---
 
-## Core Tables (Bảng Chính)
+## Table Structures
 
-### 1. Users
-**Mô tả:** Lưu trữ thông tin người dùng của hệ thống
+### 1. Conversations
+**Mô tả:** Lưu trữ thông tin hội thoại (1-on-1 hoặc nhóm)
+
+| Cột | Kiểu | Nullable | Default | Mô tả |
+|-----|------|---------|---------|-------|
+| id | INT | NO | IDENTITY(1,1) | Khóa chính, ID hội thoại |
+| isGroup | BIT | YES | 0 | Loại hội thoại: 0 = 1-on-1, 1 = nhóm |
+| createdAt | DATETIME | YES | GETDATE() | Ngày tạo hội thoại |
+
+**Sử dụng:**
+- Mỗi cuộc hội thoại (riêng tư hoặc nhóm) sẽ có một dòng
+- `isGroup = 0`: Hội thoại riêng tư giữa 2 người
+- `isGroup = 1`: Hội thoại nhóm với nhiều người
+
+**Example:**
+-- Hội thoại 1-on-1 INSERT INTO Conversations (isGroup) VALUES (0);
+-- Hội thoại nhóm INSERT INTO Conversations (isGroup) VALUES (1);
+
+---
+
+### 2. ConversationMembers
+**Mô tả:** Danh sách thành viên trong mỗi hội thoại
+
 | Cột | Kiểu | Nullable | Mô tả |
 |-----|------|---------|-------|
-| user_id | INT | NO | Khóa chính, ID người dùng |
-| name | NVARCHAR | YES | Tên người dùng |
-| email | NVARCHAR | YES | Email (dùng để đăng nhập) |
-| password | NVARCHAR | YES | Mật khẩu đã mã hóa |
-| status | NVARCHAR | YES | Trạng thái (active/inactive) |
-| google_id | NVARCHAR | YES | ID Google (nếu đăng nhập qua Google) |
+| id | INT | NO | Khóa chính |
+| conversationId | INT | NO | Khóa ngoại → Conversations (ON DELETE CASCADE) |
+| userId | INT | NO | Khóa ngoại → Users (ON DELETE CASCADE) |
+| lastReadAt | DATETIME | YES | Thời gian lần cuối đọc tin nhắn |
+
+**Sử dụng:**
+- Theo dõi thành viên của mỗi hội thoại
+- Hỗ trợ tính năng "đã đọc" (read status)
+- Cho 1-on-1: 2 dòng (1 cho mỗi user)
+- Cho nhóm: N dòng (1 cho mỗi thành viên)
+
+**Example:**
+-- Thêm 2 user vào hội thoại (1-on-1) INSERT INTO ConversationMembers (conversationId, userId, lastReadAt) VALUES (1, 1, GETDATE()), (1, 2, GETDATE());
+-- Cập nhật lần đọc cuối UPDATE ConversationMembers SET lastReadAt = GETDATE() WHERE conversationId = 1 AND userId = 1;
+
+**Ưu điểm:**
+- Dễ dàng xóa thành viên khỏi nhóm
+- Theo dõi trạng thái đọc cho mỗi user
+- Hỗ trợ nhóm có số lượng thành viên bất kỳ
 
 ---
 
-### 2. Category
-**Mô tả:** Phân loại các khóa học
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| category_id | INT | NO | Khóa chính |
-| name | NVARCHAR | YES | Tên danh mục (VD: Lập trình, Thiết kế) |
-| description | NVARCHAR | YES | Mô tả chi tiết danh mục |
+### 3. Messages
+**Mô tả:** Lưu trữ nội dung tin nhắn
+
+| Cột | Kiểu | Nullable | Default | Mô tả |
+|-----|------|---------|---------|-------|
+| id | INT | NO | IDENTITY(1,1) | Khóa chính, ID tin nhắn |
+| conversationId | INT | NO | - | Khóa ngoại → Conversations (ON DELETE CASCADE) |
+| senderId | INT | NO | - | Khóa ngoại → Users (người gửi) |
+| content | NVARCHAR(MAX) | NO | - | Nội dung tin nhắn |
+| type | NVARCHAR(20) | YES | 'text' | Loại tin nhắn: 'text', 'image', 'file', etc. |
+| createdAt | DATETIME | YES | GETDATE() | Thời gian gửi tin nhắn |
+
+**Sử dụng:**
+- Lưu tất cả tin nhắn từ mỗi thành viên
+- Sắp xếp theo `createdAt` để hiển thị theo thứ tự thời gian
+- Hỗ trợ nhiều loại nội dung
+
+**Example:**
+-- Gửi tin nhắn text INSERT INTO Messages (conversationId, senderId, content, type) VALUES (1, 1, 'Xin chào!', 'text');
+-- Gửi tin nhắn hình ảnh INSERT INTO Messages (conversationId, senderId, content, type) VALUES (1, 2, '/images/photo.jpg', 'image');
+-- Lấy tin nhắn của hội thoại theo thứ tự SELECT * FROM Messages WHERE conversationId = 1 ORDER BY createdAt DESC;
 
 ---
 
-### 3. Course
-**Mô tả:** Lưu trữ thông tin chi tiết khóa học
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| course_id | INT | NO | Khóa chính |
-| title | NVARCHAR | YES | Tên khóa học |
-| description | NVARCHAR | YES | Mô tả khóa học |
-| price | DECIMAL | YES | Giá khóa học (VND) |
-| instructor_id | INT | YES | Khóa ngoại → Users (giáo viên) |
-| status | NVARCHAR | YES | Trạng thái (active/inactive/draft) |
-| category_id | INT | YES | Khóa ngoại → Category |
-| imgUrl | NVARCHAR | YES | URL hình ảnh đại diện khóa học |
+## Relationships & Indexes
+
+### Foreign Keys
+Conversations (1) ──→ (N) ConversationMembers ──→ (N) Users ↓ (1) ──→ (N) Messages ──→ (N) Users (as sender)
+
+### Indexes
+-- Chính (cho truy vấn tin nhắn) CREATE INDEX idx_conv_msg ON Messages(conversationId, createdAt DESC);
+-- Phụ (tối ưu hóa hiệu suất) CREATE INDEX idx_conv_members ON ConversationMembers(conversationId); CREATE INDEX idx_user_messages ON Messages(senderId);
+
+**Giải thích:**
+- `idx_conv_msg`: Tìm kiếm tin nhắn theo hội thoại nhanh chóng (sắp xếp theo thời gian gần nhất)
+- `idx_conv_members`: Tìm thành viên của hội thoại
+- `idx_user_messages`: Tìm tin nhắn từ một user cụ thể
 
 ---
 
-### 4. Lesson
-**Mô tả:** Các bài học trong khóa học
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| lesson_id | INT | NO | Khóa chính |
-| course_id | INT | YES | Khóa ngoại → Course |
-| title | NVARCHAR | YES | Tên bài học |
-| video_url | NVARCHAR | YES | URL video bài học |
-| duration | INT | YES | Thời lượng bài học (phút) |
-| status | NVARCHAR | YES | Trạng thái (active/inactive) |
+## Common Queries
+
+### 1. Lấy danh sách hội thoại của user
+SELECT c.id, c.isGroup, COUNT(cm.userId) AS member_count, MAX(m.createdAt) AS last_message_time FROM Conversations c JOIN ConversationMembers cm ON c.id = cm.conversationId LEFT JOIN Messages m ON c.id = m.conversationId WHERE cm.userId = @userId GROUP BY c.id, c.isGroup ORDER BY MAX(m.createdAt) DESC;
+
+### 2. Lấy tin nhắn của hội thoại
+SELECT m.id, m.conversationId, u.name AS sender_name, m.content, m.type, m.createdAt, CASE WHEN cm.lastReadAt >= m.createdAt THEN 'read' ELSE 'unread' END AS status FROM Messages m JOIN Users u ON m.senderId = u.user_id LEFT JOIN ConversationMembers cm ON m.conversationId = cm.conversationId AND cm.userId = @currentUserId WHERE m.conversationId = @conversationId ORDER BY m.createdAt DESC;
+
+### 3. Kiểm tra tin nhắn chưa đọc
+SELECT COUNT(*) AS unread_count FROM Messages m WHERE m.conversationId = @conversationId AND m.senderId != @currentUserId AND m.createdAt > ( SELECT lastReadAt FROM ConversationMembers WHERE conversationId = @conversationId AND userId = @currentUserId );
+
+### 4. Xóa cuộc hội thoại (tự động xóa tin nhắn và thành viên)
+DELETE FROM Conversations WHERE id = @conversationId; -- ConversationMembers và Messages sẽ tự động xóa (ON DELETE CASCADE)
 
 ---
 
-## Transaction Tables (Bảng Giao Dịch)
+## Data Flow
 
-### 5. Cart
-**Mô tả:** Giỏ hàng người dùng
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| cart_id | INT | NO | Khóa chính |
-| user_id | INT | YES | Khóa ngoại → Users |
+### Tạo 1-on-1 Conversation
+1.	INSERT → Conversations (isGroup = 0)
+2.	INSERT → ConversationMembers (User A)
+3.	INSERT → ConversationMembers (User B)
+4.	INSERT → Messages (Message content)
 
----
-
-### 6. Cart_Item
-**Mô tả:** Các khóa học trong giỏ hàng
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| cart_item_id | INT | NO | Khóa chính |
-| cart_id | INT | YES | Khóa ngoại → Cart |
-| course_id | INT | YES | Khóa ngoại → Course |
-| price | DECIMAL | YES | Giá khóa học tại thời điểm thêm vào |
+### Tạo Group Conversation
+1.	INSERT → Conversations (isGroup = 1)
+2.	INSERT → ConversationMembers (User 1)
+3.	INSERT → ConversationMembers (User 2)
+4.	INSERT → ConversationMembers (User N)
+5.	INSERT → Messages (Message content)
 
 ---
 
-### 7. Coupon
-**Mô tả:** Mã giảm giá/phiếu giảm giá
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| coupon_id | INT | NO | Khóa chính |
-| code | NVARCHAR | YES | Mã coupon (VD: SUMMER2024) |
-| discount_type | NVARCHAR | YES | Loại giảm (PERCENTAGE/FIXED) |
-| discount_value | DECIMAL | YES | Giá trị giảm (% hoặc VND) |
-| max_discount | DECIMAL | YES | Giá trị giảm tối đa (VND) |
-| min_order_value | DECIMAL | YES | Giá trị đơn hàng tối thiểu |
-| start_date | DATETIME | YES | Ngày bắt đầu hiệu lực |
-| end_date | DATETIME | YES | Ngày kết thúc hiệu lực |
-| usage_limit | INT | YES | Số lần sử dụng tối đa |
-| status | NVARCHAR | YES | Trạng thái (active/inactive) |
+## Best Practices
+
+✅ **Nên làm:**
+- Luôn ghi nhận `lastReadAt` khi user xem tin nhắn
+- Sử dụng pagination khi lấy tin nhắn (limit + offset)
+- Lọc tin nhắn theo `type` nếu cần phân loại
+- Soft delete thay vì hard delete (thêm cột `deletedAt`)
+
+❌ **Không nên làm:**
+- Xóa `Conversations` trực tiếp (sẽ mất lịch sử)
+- Truy vấn toàn bộ tin nhắn mà không `WHERE conversationId`
+- Cập nhật `createdAt` sau khi tạo
 
 ---
 
-### 8. Invoice
-**Mô tả:** Đơn hóa đơn (thanh toán)
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| invoice_id | INT | NO | Khóa chính |
-| user_id | INT | YES | Khóa ngoại → Users |
-| coupon_id | INT | YES | Khóa ngoại → Coupon |
-| total_amount | DECIMAL | YES | Tổng giá gốc (VND) |
-| discount_amount | DECIMAL | YES | Số tiền giảm (VND) |
-| final_amount | DECIMAL | YES | Số tiền cuối cùng phải thanh toán |
-| payment_method | NVARCHAR | YES | Phương thức thanh toán (Momo, Card, etc.) |
-| payment_status | NVARCHAR | YES | Trạng thái (pending/success/failed) |
-| created_at | DATETIME | YES | Ngày tạo hóa đơn (mặc định: GETDATE()) |
-| order_id | INT | YES | ID giao dịch từ payment gateway (Momo) |
-| updated_at | DATETIME | YES | Ngày cập nhật cuối (mặc định: GETDATE()) |
+## Statistics
+
+**Tính toán:**
+- Mỗi 1-on-1: 1 Conversations + 2 ConversationMembers + N Messages
+- Mỗi Group (N user): 1 Conversations + N ConversationMembers + M Messages
+
+**Example:** 
+- 100 users → ~4,950 1-on-1 conversations
+- 1 group (50 users) → 1 conversation + 50 members + N messages
 
 ---
 
-### 9. Invoice_Item
-**Mô tả:** Chi tiết các khóa học trong hóa đơn
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| invoice_item_id | INT | NO | Khóa chính |
-| invoice_id | INT | NO | Khóa ngoại → Invoice (ON DELETE CASCADE) |
-| course_id | INT | NO | Khóa ngoại → Course |
-| price | FLOAT | NO | Giá khóa học tại thời điểm mua |
-| created_at | DATETIME | YES | Ngày tạo (mặc định: GETDATE()) |
-
----
-
-## Learning Tracking Tables (Bảng Theo Dõi Học Tập)
-
-### 10. Enrollment
-**Mô tả:** Đăng ký khóa học (sau khi thanh toán)
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| enrollment_id | INT | NO | Khóa chính |
-| user_id | INT | YES | Khóa ngoại → Users |
-| course_id | INT | YES | Khóa ngoại → Course |
-| purchase_date | DATETIME | YES | Ngày đăng ký/mua |
-| progress | INT | YES | Tiến độ học (%): 0-100 |
-
----
-
-### 11. Lesson_Process
-**Mô tả:** Tiến độ học tập từng bài
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| process_id | INT | NO | Khóa chính |
-| lesson_id | INT | NO | Khóa ngoại → Lesson |
-| finished_date | DATETIME | YES | Ngày hoàn thành bài |
-| process | INT | YES | Tiến độ bài học (%) |
-
----
-
-### 12. Course_Process
-**Mô tả:** Tiến độ học tập khóa học
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| process_id | INT | NO | Khóa chính |
-| course_id | INT | NO | Khóa ngoại → Course |
-| finished_date | DATETIME | YES | Ngày hoàn thành khóa |
-| process | INT | YES | Tiến độ khóa học (%) |
-
----
-
-### 13. Learning_Process
-**Mô tả:** Theo dõi tiến trình học tập của người dùng
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| process_id | INT | NO | Khóa chính |
-| user_id | INT | YES | Khóa ngoại → Users |
-
----
-
-### 14. Lesson_Note
-**Mô tả:** Ghi chú/tài liệu đính kèm bài học
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| note_id | INT | NO | Khóa chính |
-| lesson_id | INT | YES | Khóa ngoại → Lesson |
-| attachment | NVARCHAR | YES | URL/tên file đính kèm |
-| create_at | DATETIME | YES | Ngày tạo (mặc định: GETDATE()) |
-
----
-
-## Review & Feedback Tables
-
-### 15. Review
-**Mô tả:** Đánh giá và bình luận khóa học
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| review_id | INT | NO | Khóa chính |
-| user_id | INT | YES | Khóa ngoại → Users |
-| course_id | INT | YES | Khóa ngoại → Course |
-| rating | INT | YES | Điểm đánh giá (1-5) |
-| comment | NVARCHAR | YES | Nội dung bình luận |
-
----
-
-### 16. Wishlist
-**Mô tả:** Danh sách yêu thích khóa học
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| user_id | INT | NO | Khóa chính (FK → Users) |
-| course_id | INT | NO | Khóa chính (FK → Course) |
-
----
-
-## User Management Tables (Bảng Quản Lý Quyền)
-
-### 17. Roles
-**Mô tả:** Các vai trò trong hệ thống
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| role_id | INT | NO | Khóa chính |
-| roleName | NVARCHAR | YES | Tên vai trò (Admin, Instructor, Student) |
-
----
-
-### 18. Account_Role
-**Mô tả:** Gán vai trò cho người dùng
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| user_id | INT | NO | Khóa chính (FK → Users) |
-| role_id | INT | NO | Khóa chính (FK → Roles) |
-
----
-
-### 19. Features
-**Mô tả:** Danh sách tính năng/chức năng
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| feature_id | INT | NO | Khóa chính |
-| urlPath | NVARCHAR | YES | Đường dẫn chức năng (VD: /admin/users) |
-
----
-
-### 20. Role_Feature
-**Mô tả:** Gán quyền tính năng cho vai trò
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| role_id | INT | NO | Khóa chính (FK → Roles) |
-| feature_id | INT | NO | Khóa chính (FK → Features) |
-
----
-
-## Communication Tables (Bảng Giao Tiếp)
-
-### 21. Chat
-**Mô tả:** Hệ thống tin nhắn giữa người dùng
-| Cột | Kiểu | Nullable | Mô tả |
-|-----|------|---------|-------|
-| chat_id | INT | NO | Khóa chính |
-| sender_id | INT | YES | Khóa ngoại → Users (người gửi) |
-| receiver_id | INT | YES | Khóa ngoại → Users (người nhận) |
-| message | NVARCHAR | YES | Nội dung tin nhắn |
-| status | NVARCHAR | YES | Trạng thái (sent/read/unread) |
-| send_date | DATETIME | YES | Ngày gửi (mặc định: GETDATE()) |
-
----
-
-## Database Diagram Relationships
-Users (1) ──→ (N) Course (as instructor) │ ├─→ (N) Enrollment │ ├─→ (N) Invoice │ ├─→ (N) Cart │ ├─→ (N) Review │ ├─→ (N) Wishlist │ ├─→ (N) Chat (as sender/receiver) │ └─→ (N) Account_Role ←─ (N) Roles ←─ (N) Role_Feature ←─ Features
-Category (1) ──→ (N) Course
-Course (1) ──→ (N) Lesson │ ├─→ (N) Enrollment │ ├─→ (N) Invoice_Item ←─ (N) Invoice ←─ (1) Coupon │ ├─→ (N) Cart_Item ←─ (N) Cart │ ├─→ (N) Review │ ├─→ (N) Wishlist │ └─→ (N) Course_Process
-Lesson (1) ──→ (N) Lesson_Process └─→ (N) Lesson_Note
-Learning_Process ←─ User
-
----
-
-## Key Points for AI Agents
-
-- **Primary Keys:** Tất cả các bảng đều có khóa chính
-- **Foreign Keys:** Các mối quan hệ được định nghĩa qua khóa ngoại
-- **Cascade Deletion:** Invoice_Item tự động xóa khi Invoice bị xóa
-- **Default Values:** Các cột timestamp sử dụng GETDATE()
-- **Payment Integration:** Trường `order_id` trong Invoice dùng lưu ID từ Momo payment gateway
-- **Status Fields:** Nhiều bảng có trường `status` để quản lý trạng thái
-- **Progress Tracking:** Hệ thống theo dõi tiến độ ở 3 cấp độ: User → Course → Lesson
-
----
+**Ngày cập nhật:** 2026-03-26

@@ -2,7 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css'; // Nên cài thêm gói này
 import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { getUserFromToken, logout } from "../../utils/authUtils";
+import { getUserFromToken, logout, getUserRole } from "../../utils/authUtils";
 import { useCart } from "../../context/CartContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
@@ -11,9 +11,9 @@ export default function Header() {
     const { user } = useContext(AuthContext);
     const tokenUser = getUserFromToken();
     const currentUser = user || tokenUser;
+    console.log("HEADER USER:", currentUser.roles);
     const { cart } = useCart();
     const navigate = useNavigate();
-
     const logoutHandler = () => {
         logout();
         navigate('/login');
@@ -37,10 +37,10 @@ export default function Header() {
                         {/* Left Menu */}
                         <ul className="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                             <li className="nav-item">
-                                <Link className="nav-link fw-medium" to="/courses">Khóa học</Link>
+                                <Link className="nav-link fw-medium" to="/forum">Diễn đàn</Link>
                             </li>
                             <li className="nav-item">
-                                <Link className="nav-link fw-medium" to="/game">Giải trí</Link>
+                                <Link className="nav-link fw-medium" to="/chat">Nhắn tin</Link>
                             </li>
                         </ul>
 
@@ -73,8 +73,11 @@ export default function Header() {
                                     </button>
                                     <ul className="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
                                         <li><Link className="dropdown-item py-2" to="/profile">Hồ sơ của tôi</Link></li>
-                                        {currentUser.role === 'admin' && (
+                                        {currentUser.roles?.includes('Admin') && (
                                             <li><Link className="dropdown-item py-2 text-primary" to="/admin">Quản trị viên</Link></li>
+                                        )}
+                                        {currentUser.roles?.includes('Teacher') && (
+                                            <li><Link className="dropdown-item py-2 text-primary" to="/teachers">Giảng viên</Link></li>
                                         )}
                                         <li><hr className="dropdown-divider" /></li>
                                         <li><button className="dropdown-item py-2 text-danger" onClick={logoutHandler}>Đăng xuất</button></li>

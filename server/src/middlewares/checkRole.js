@@ -1,8 +1,13 @@
 const checkRole = (...allowedRoles) => {
+    const flatRoles = allowedRoles.flat();
+    
     return (req, res, next) => {
+
         const userRoles = req.user.roles;
 
-        const hasRole = allowedRoles.some(role =>
+        console.log('User check roles:', userRoles);
+
+        const hasRole = flatRoles.some(role =>
             userRoles.includes(role)
         );
 

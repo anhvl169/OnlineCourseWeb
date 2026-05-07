@@ -14,7 +14,7 @@ const createPaymentLink = async (req, res) => {
     try {
         console.log('PAYMENT REQUEST RECEIVED');
         console.log('Raw req.body:', JSON.stringify(req.body, null, 2));
-        
+
         let { amount, items, orderInfo, paymentMethod } = req.body;
         const user = req.user;
 

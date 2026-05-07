@@ -7,7 +7,7 @@ const router = express.Router();
 router.get(
     '/',
     authMiddleware,
-    checkRole(['admin']),
+    checkRole(['Admin']),
     (req, res) => {
         res.json({ message: "Admin access" });
     }

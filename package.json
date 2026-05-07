@@ -11,5 +11,10 @@
     },
     "keywords": [],
     "author": "",
-    "license": "ISC"
+    "license": "ISC",
+    "dependencies": {
+        "@langchain/core": "^1.1.45",
+        "@langchain/ollama": "^1.2.7",
+        "langchain": "^1.4.0"
+    }
 }

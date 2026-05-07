@@ -21,6 +21,23 @@ const getUserProfile = async (req, res) => {
     }
 };
 
+const getPublicUserProfile = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        if (!userId) {
+            return res.status(400).json({ message: "User ID is required" });
+        }
+        const profile = await userRepo.getPublicUserProfile(parseInt(userId));
+        if (!profile) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.status(200).json(profile);
+    } catch (error) {
+        console.error('Error in getPublicUserProfile:', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
 const updateUserProfile = async (req, res) => {
     try {
         const { userId } = req.params;
@@ -111,6 +128,7 @@ const getInvoiceDetails = async (req, res) => {
 
 module.exports = {
     getUserProfile,
+    getPublicUserProfile,
     updateUserProfile,
     getEnrolledCourses,
     getUserInvoices,

@@ -5,7 +5,8 @@ const {
     updateUserProfile,
     getEnrolledCourses,
     getUserInvoices,
-    getInvoiceDetails
+    getInvoiceDetails,
+    getPublicUserProfile
 } = require('../../controllers/user/userController');
 
 const router = express.Router();
@@ -20,6 +21,8 @@ router.get(
 
 // Lấy thông tin profile người dùng
 router.get('/profile/:userId', authMiddleware, getUserProfile);
+//lấy thông tin profile người dùng khác
+router.get('/:userId', getPublicUserProfile);
 
 // Cập nhật thông tin profile người dùng
 router.put('/profile/:userId', authMiddleware, updateUserProfile);

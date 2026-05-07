@@ -110,6 +110,17 @@ export default function Cart() {
                                         {paymentMethod === "vnpay" && <i className="bi bi-check-circle-fill text-primary"></i>}
                                     </label>
 
+                                    {/* QR TRANSFER */}
+                                    <input type="radio" className="btn-check" name="payment" id="qr" autoComplete="off"
+                                        checked={paymentMethod === "qr"} onChange={() => setPaymentMethod("qr")} />
+                                    <label className="btn btn-outline-light text-dark border d-flex align-items-center justify-content-between p-3 rounded-3" htmlFor="qr">
+                                        <div className="d-flex align-items-center">
+                                            <img src="https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg" width="24" className="me-3" alt="qr" />
+                                            <span>QR Pay</span>
+                                        </div>
+                                        {paymentMethod === "qr" && <i className="bi bi-check-circle-fill text-primary"></i>}
+                                    </label>
+
                                     {/* BANK TRANSFER */}
                                     <input type="radio" className="btn-check" name="payment" id="bank" autoComplete="off"
                                         checked={paymentMethod === "bank"} onChange={() => setPaymentMethod("bank")} />

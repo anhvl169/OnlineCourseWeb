@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllCate } = require('../../controllers/course/getallcate');
+const { getAllCate } = require('../../controllers/course/course.controller');
 
 const router = express.Router();
 

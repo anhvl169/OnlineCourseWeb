@@ -74,17 +74,14 @@ module.exports = (io) => {
                 // 3. nếu là AI chat
                 if (conversation.type === "ai") {
 
-                    // typing fake
                     io.to(`conv_${data.conversationId}`)
                         .emit("aiTyping", true);
 
-                    // generate AI
                     const aiResult =
                         await generateAIResponse(
                             data.content
                         );
                     console.log("AI RESULT:", aiResult);
-                    // save AI message
                     const aiSaved =
                         await chatService.saveMessage({
                             conversationId:

@@ -1,4 +1,42 @@
 const { sql } = require('./../config/db');
+
+const getRecommendCourses = async (keyword) => {
+    try {
+        const request = new sql.Request();
+        request.input("keyword", sql.NVarChar, `%${keyword}%`);
+        const result = await request.query(`
+            SELECT TOP 10
+                co.course_id,
+                co.title,
+                co.description,
+                co.price,
+                co.instructor_id,
+                co.status,
+                co.imgUrl,
+                c.name AS category_name
+            FROM Course co
+            JOIN Category c
+                ON co.category_id =
+                    c.category_id
+            WHERE
+                co.[status] = 'active'
+                AND (
+                    co.title LIKE @keyword
+                    OR co.[description]
+                        LIKE @keyword
+                    OR c.[name]
+                        LIKE @keyword
+                    OR c.[description]
+                        LIKE @keyword
+                )
+        `);
+        return result.recordset;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    }
+};
+
 const getCourses = async (search, category, offset, limit) => {
     try {
         const request = new sql.Request();
@@ -60,5 +98,6 @@ const getCourseById = async (courseId) => {
 module.exports = {
     getCourses,
     countCourses,
-    getCourseById
+    getCourseById,
+    getRecommendCourses
 };

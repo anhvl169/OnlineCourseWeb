@@ -3,7 +3,7 @@ const router = express.Router();
 const { getConversations, getMessages, getOrCreateAIConversation } = require("../../controllers/chat/chat.controller");
 const { authMiddleware } = require("../../middlewares/verifyToken");
 const { createConversation } = require("../../services/chat.service");
-
+const { recommendCourses } = require("../../controllers/ai/openai.controller");
 router.get("/conversations", authMiddleware, getConversations);
 router.post("/conversations", authMiddleware, async (req, res) => {
     try {
@@ -26,5 +26,6 @@ router.post("/conversations", authMiddleware, async (req, res) => {
 });
 router.post("/ai", authMiddleware, getOrCreateAIConversation);
 router.get("/messages/:id", authMiddleware, getMessages);
+router.post("/recommend", recommendCourses);
 
 module.exports = router;

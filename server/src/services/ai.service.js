@@ -1,44 +1,90 @@
-const ollama = require("ollama");
+const ollama = require("ollama").default;
+const { searchWeb } = require("./search.service");
 console.log("OLLAMA MODULE:", ollama);
 const generateAIResponse = async (message) => {
 
     try {
 
-        const ollama =
-            (await import("ollama")).default;
+        const searchResults =
+            await searchWeb(message);
 
-        const response = await ollama.chat({
-            model: "qwen3-vl:4b",
+        // ❌ search fail
+        if (
+            !searchResults ||
+            searchResults.length === 0
+        ) {
 
-            messages: [
-                {
-                    role: "system",
-                    content: `
-Bạn là trợ lý AI cho website khóa học online.
+            return {
+                answer:
+                    "Hiện chưa kết nối được tới internet để tìm kiếm thông tin.",
+                sources: [],
+                internetFailed: true
+            };
+        }
 
-Nhiệm vụ:
-- hỗ trợ khách hàng
-- tư vấn khóa học
-- trả lời ngắn gọn
-- thân thiện
+        const webContext =
+            searchResults
+                .map((r, i) => `
+[${i + 1}]
+Title: ${r.title}
+
+Content:
+${r.content}
+
+URL:
+${r.url}
+`)
+                .join("\n");
+
+        const response =
+            await ollama.chat({
+                model: "qwen3-vl:4b",
+
+                messages: [
+                    {
+                        role: "system",
+                        content: `
+Bạn là AI assistant.
+
+QUAN TRỌNG:
+- Chỉ nói "không có internet"
+  nếu KHÔNG có web results.
+- Nếu có web results,
+  PHẢI trả lời bằng dữ liệu web.
 `
-                },
-                {
-                    role: "user",
-                    content: message
-                }
-            ]
-        });
+                    },
+                    {
+                        role: "user",
+                        content: `
+Question:
+${message}
 
-        return response.message.content;
+Web Results:
+${webContext}
+`
+                    }
+                ]
+            });
+
+        return {
+            answer: response.message.content,
+            sources: searchResults,
+            internetFailed: false
+        };
 
     } catch (err) {
 
-        console.error("OLLAMA ERROR:", err);
+        console.error(err);
 
-        throw err;
+        return {
+            answer:
+                "Hiện chưa kết nối được tới internet để tìm kiếm thông tin.",
+            sources: [],
+            internetFailed: true
+        };
     }
 };
+
 
 module.exports = {
     generateAIResponse

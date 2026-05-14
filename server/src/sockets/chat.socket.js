@@ -79,11 +79,11 @@ module.exports = (io) => {
                         .emit("aiTyping", true);
 
                     // generate AI
-                    const aiReply =
+                    const aiResult =
                         await generateAIResponse(
                             data.content
                         );
-
+                    console.log("AI RESULT:", aiResult);
                     // save AI message
                     const aiSaved =
                         await chatService.saveMessage({
@@ -92,7 +92,8 @@ module.exports = (io) => {
 
                             senderId: AI_USER_ID,
 
-                            content: aiReply
+                            content: aiResult.answer,
+                            sources: aiResult.sources
                         });
 
                     // stop typing
@@ -101,7 +102,7 @@ module.exports = (io) => {
 
                     // emit AI message
                     io.to(`conv_${data.conversationId}`)
-                        .emit("newMessage", aiSaved);
+                        .emit("newMessage", { ...aiSaved, sources: aiResult.sources });
 
                     io.to(`conv_${data.conversationId}`)
                         .emit("updateConversation", {

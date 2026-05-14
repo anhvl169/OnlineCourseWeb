@@ -1,16 +1,50 @@
 const { sql } = require('./../config/db');
 const { AI_USER_ID } = require("./../config/system");
-const insertMessage = async (conversationId, senderId, content) => {
+const insertMessage = async (
+    conversationId,
+    senderId,
+    content,
+    sources = []
+) => {
     try {
+
         const result = await sql.query`
-        INSERT INTO Messages (conversationId, senderId, content)
+
+        INSERT INTO Messages (
+            conversationId,
+            senderId,
+            content,
+            sources
+        )
+
         OUTPUT INSERTED.*
-        VALUES (${conversationId}, ${senderId}, ${content})
+
+        VALUES (
+            ${conversationId},
+            ${senderId},
+            ${content},
+            ${JSON.stringify(sources)}
+        )
     `;
 
-        return result.recordset[0];
+        const msg = result.recordset[0];
+
+        return {
+            ...msg,
+
+            sources:
+                msg.sources
+                    ? JSON.parse(msg.sources)
+                    : []
+        };
+
     } catch (err) {
-        console.error("Database error in insertMessage:", err);
+
+        console.error(
+            "Database error in insertMessage:",
+            err
+        );
+
         throw err;
     }
 };
@@ -223,7 +257,14 @@ const getMessages = async (conversationId, page, limit) => {
             OFFSET ${offset} ROWS FETCH NEXT ${limitNum} ROWS ONLY
         `;
 
-        return result.recordset;
+        return result.recordset.map(msg => ({
+            ...msg,
+
+            sources:
+                msg.sources
+                    ? JSON.parse(msg.sources)
+                    : []
+        }));
     } catch (err) {
         console.error("Database error in getMessages:", err);
         throw err;

@@ -3,7 +3,8 @@ const chatRepo = require("../repositories/chat.repo");
 const saveMessage = async ({
     conversationId,
     senderId,
-    content
+    content,
+    sources = []
 }) => {
 
     if (!conversationId) {
@@ -21,7 +22,8 @@ const saveMessage = async ({
     return await chatRepo.insertMessage(
         conversationId,
         senderId,
-        content.trim()
+        content.trim(),
+        sources
     );
 };
 

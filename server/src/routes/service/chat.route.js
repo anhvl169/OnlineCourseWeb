@@ -24,7 +24,7 @@ router.post("/conversations", authMiddleware, async (req, res) => {
         res.status(500).json({ message: err.message });
     }
 });
-router.post("/ai", authMiddleware, getOrCreateAIConversation, () => console.log("GET OR CREATE AI"));
+router.post("/ai", authMiddleware, getOrCreateAIConversation);
 router.get("/messages/:id", authMiddleware, getMessages);
 
 module.exports = router;

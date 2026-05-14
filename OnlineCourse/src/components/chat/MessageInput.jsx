@@ -16,6 +16,13 @@ export default function MessageInput() {
         socket.emit("typing", { conversationId: currentConv });
     };
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            handleSend();
+        }
+    };
+
     return (
         <div className="d-flex p-2 border-top">
             <input
@@ -25,6 +32,8 @@ export default function MessageInput() {
                     setText(e.target.value);
                     handleTyping();
                 }}
+                onKeyDown={handleKeyDown}
+                placeholder="Type a message..."
             />
             <button className="btn btn-primary ms-2" onClick={handleSend}>
                 Send

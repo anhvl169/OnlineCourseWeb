@@ -35,16 +35,7 @@ export const CartProvider = ({ children }) => {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            // Cập nhật local state
-            const newItem = {
-                cart_item_id: response.data.cartId + '_' + courseId,
-                course_id: courseId,
-                price,
-                title: courseTitle,
-                imgUrl: courseImg
-            };
-            setCart([...cart, newItem]);
-            setTotal(total + price);
+            await fetchCart();
 
             return { success: true, message: 'Thêm vào giỏ hàng thành công' };
         } catch (error) {
@@ -64,9 +55,7 @@ export const CartProvider = ({ children }) => {
                 `http://localhost:5000/api/cart/${cartItemId}`,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
-
-            setCart(cart.filter(item => item.cart_item_id !== cartItemId));
-            setTotal(total - itemToRemove.price);
+            await fetchCart();
 
             return { success: true };
         } catch (error) {
@@ -74,7 +63,6 @@ export const CartProvider = ({ children }) => {
         }
     };
 
-    // Load cart khi component mount
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (token) {

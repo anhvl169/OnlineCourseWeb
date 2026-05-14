@@ -1,5 +1,5 @@
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { CartProvider } from './context/CartContext';
+import { AppProvider } from './context/AppContext';
 import Layout from './pages/Layout/Layout';
 
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -25,7 +25,6 @@ import PaymentResult from './pages/Checkout/PaymentResult';
 
 //chat
 import ChatPage from './pages/Chat/ChatPage';
-import { ChatProvider } from "./context/ChatContext";
 //dashboard
 import StudentInCourse from './components/Dashboard/StudentInCourse';
 import CourseByTeacher from './components/Dashboard/CourseByTeacher';
@@ -34,117 +33,99 @@ function App() {
   return (
     <div className="App">
       <BrowserRouter>
-        <CartProvider>
-          <ChatProvider>
+        <AppProvider>
+          <Routes>
 
-            <Routes>
+            {/* chat */}
+            <Route path="/chat" element={<Layout><ChatPage /></Layout>} />
 
-              {/* chat */}
-              <Route
-                path="/chat"
-                element={
-                  <Layout>
-                    <ChatPage />
-                  </Layout>
-                }
-              />
+            {/* user profile */}
+            <Route path="/users/:id" element={<Layout><UserProfile /></Layout>} />
 
-              {/* user profile */}
-              <Route
-                path="/users/:id"
-                element={
-                  <Layout>
-                    <UserProfile />
-                  </Layout>
-                }
-              />
+            {/* auth */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/auth/callback" element={<AuthCallbackPage />} />
 
-              {/* auth */}
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/auth/callback" element={<AuthCallbackPage />} />
+            {/* payment */}
+            <Route
+              path="/cart"
+              element={<Layout><Cart /></Layout>}
+            />
 
-              {/* payment */}
-              <Route
-                path="/cart"
-                element={<Layout><Cart /></Layout>}
-              />
+            <Route
+              path="/checkout"
+              element={<Layout><Checkout /></Layout>}
+            />
 
-              <Route
-                path="/checkout"
-                element={<Layout><Checkout /></Layout>}
-              />
+            <Route
+              path="/payment-result"
+              element={<PaymentResult />}
+            />
 
-              <Route
-                path="/payment-result"
-                element={<PaymentResult />}
-              />
+            {/* course */}
+            <Route
+              path="/courses/detail/:id"
+              element={<Layout><CourseDetail /></Layout>}
+            />
 
-              {/* course */}
-              <Route
-                path="/courses/detail/:id"
-                element={<Layout><CourseDetail /></Layout>}
-              />
+            <Route
+              path="/"
+              element={<Layout><CourseList /></Layout>}
+            />
 
-              <Route
-                path="/"
-                element={<Layout><CourseList /></Layout>}
-              />
-
-              {/* profile */}
-              <Route
-                element={
-                  <ProtectedRoute
-                    roles={["student", "teacher", "admin"]}
-                  />
-                }
-              >
-                <Route
-                  path="/profile"
-                  element={<Layout><Profile /></Layout>}
+            {/* profile */}
+            <Route
+              element={
+                <ProtectedRoute
+                  roles={["student", "teacher", "admin"]}
                 />
-              </Route>
-
-              {/* admin */}
+              }
+            >
               <Route
-                element={
-                  <ProtectedRoute roles={["admin"]} />
-                }
-              >
-                <Route
-                  path="/admin"
-                  element={<Layout><AdminBoard /></Layout>}
-                />
-              </Route>
+                path="/profile"
+                element={<Layout><Profile /></Layout>}
+              />
+            </Route>
 
-              {/* teacher */}
+            {/* admin */}
+            <Route
+              element={
+                <ProtectedRoute roles={["admin"]} />
+              }
+            >
               <Route
-                element={
-                  <ProtectedRoute
-                    roles={["teacher", "admin"]}
-                  />
-                }
-              >
-                <Route
-                  path="/teachers"
-                  element={<Layout><TeacherBoard /></Layout>}
+                path="/admin"
+                element={<Layout><AdminBoard /></Layout>}
+              />
+            </Route>
+
+            {/* teacher */}
+            <Route
+              element={
+                <ProtectedRoute
+                  roles={["teacher", "admin"]}
                 />
+              }
+            >
+              <Route
+                path="/teachers"
+                element={<Layout><TeacherBoard /></Layout>}
+              />
 
-                <Route
-                  path="/teachers/courses/:id/students"
-                  element={<Layout><StudentInCourse /></Layout>}
-                />
+              <Route
+                path="/teachers/courses/:id/students"
+                element={<Layout><StudentInCourse /></Layout>}
+              />
 
-                <Route
-                  path="/teachers/courses"
-                  element={<Layout><CourseByTeacher /></Layout>}
-                />
-              </Route>
+              <Route
+                path="/teachers/courses"
+                element={<Layout><CourseByTeacher /></Layout>}
+              />
+            </Route>
 
-            </Routes>
-
-          </ChatProvider>
-        </CartProvider>
+          </Routes>
+        </AppProvider>
       </BrowserRouter>
     </div >
   );

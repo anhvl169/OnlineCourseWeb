@@ -66,12 +66,9 @@ tmp/
 temp/
 
 # =========================
-# Optional (uploads, nếu có)
+# Optional
 # =========================
 uploads/
 server/uploads/
 
-database.md
-database.md
-database-migrations/001_add_profile_fields.sql
 database.md

@@ -12,10 +12,10 @@ export const ChatProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);
     const [typingUsers, setTypingUsers] = useState([]);
     const [aiTyping, setAiTyping] = useState(false);
-    const aiUserId = 12;
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
     const initialized = useRef(false);
+
     // load conversations
     const loadConversations = async () => {
         const res = await axios.get("http://localhost:5000/api/chat/conversations", {
@@ -113,14 +113,11 @@ export const ChatProvider = ({ children }) => {
         const res = await axios.get(`http://localhost:5000/api/chat/messages/${convId}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
-        console.log("API MESSAGES:", res.data);
         setMessages([...res.data].reverse());
     };
 
     // send message
     const sendMessage = (content) => {
-        console.log("SEND CONTENT:", content);
-        console.log("SEND:", currentConv);
         if (!currentConv) {
             alert("Vui lòng chọn hoặc tạo cuộc hội thoại trước");
             return;
@@ -138,7 +135,6 @@ export const ChatProvider = ({ children }) => {
     // join room khi đổi chat
     useEffect(() => {
         if (currentConv) {
-            console.log("JOIN + LOAD:", currentConv);
             socket.emit("joinConversation", currentConv);
             loadMessages(currentConv);
         }
@@ -153,7 +149,6 @@ export const ChatProvider = ({ children }) => {
             setAiTyping(typing);
         });
         socket.on("updateConversation", ({ conversationId, lastMessage }) => {
-            console.log("UPDATE CONV:", conversationId, lastMessage);
             setConversations(prev =>
                 prev.filter(Boolean).map(c =>
                     c.id === conversationId
@@ -169,7 +164,6 @@ export const ChatProvider = ({ children }) => {
                 setTypingUsers(prev => prev.filter(id => id !== userId));
             }, 2000);
         });
-        console.log("Conversations:", conversations);
         return () => {
             socket.off("newMessage");
             socket.off("updateConversation");

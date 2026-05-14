@@ -2,16 +2,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css'; // Nên cài thêm gói này
 import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { getUserFromToken, logout, getUserRole } from "../../utils/authUtils";
+import { logout } from "../../utils/authUtils";
 import { useCart } from "../../context/CartContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
 
 export default function Header() {
     const { user } = useContext(AuthContext);
-    const tokenUser = getUserFromToken();
-    const currentUser = user || tokenUser;
-    console.log("HEADER USER:", currentUser.roles);
+    // const tokenUser = getUserFromToken();
+    const currentUser = user ;
+    console.log("HEADER USER:", currentUser);
     const { cart } = useCart();
     const navigate = useNavigate();
     const logoutHandler = () => {

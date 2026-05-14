@@ -18,8 +18,6 @@ const createConversation = async (req, res) => {
         }
 
         const conv = await chatService.createConversation(userId, otherUserId);
-        console.log("USER:", req.user);
-        console.log("BODY:", req.body);
         res.json(conv);
     } catch (err) {
         console.error(err);
@@ -33,8 +31,6 @@ const getMessages = async (req, res) => {
 
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
-    console.log("page:", page, typeof page);
-    console.log("limit:", limit, typeof limit);
     const data = await chatService.getMessages(id, pageNum, limitNum);
     res.json(data);
 };

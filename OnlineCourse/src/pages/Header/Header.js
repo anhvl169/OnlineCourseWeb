@@ -5,19 +5,21 @@ import { Link, useNavigate } from 'react-router-dom';
 import { logout } from "../../utils/authUtils";
 import { useCart } from "../../context/CartContext";
 import { AuthContext } from "../../context/AuthContext";
-import { useContext } from "react";
+import { useEffect, useContext } from "react";
 
 export default function Header() {
     const { user } = useContext(AuthContext);
-    // const tokenUser = getUserFromToken();
-    const currentUser = user ;
-    console.log("HEADER USER:", currentUser);
+
+    const currentUser = user;
     const { cart } = useCart();
     const navigate = useNavigate();
     const logoutHandler = () => {
         logout();
         navigate('/login');
     };
+    useEffect(() => {
+        console.log("Current User in Header:", currentUser);
+    }, [currentUser]);
 
     return (
         <header className="main-header fixed-top">

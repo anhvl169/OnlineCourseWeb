@@ -31,7 +31,7 @@ export default function CourseDetail() {
 
     return (
         <div className="container py-5">
-            <div className="row">
+            <div className="row py-5">
                 {/* Cột trái: Thông tin chính */}
                 <div className="col-lg-8">
                     <nav aria-label="breadcrumb">

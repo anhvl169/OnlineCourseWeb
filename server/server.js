@@ -7,7 +7,7 @@ const { Server } = require("socket.io");
 
 const { connectDB } = require('./src/config/db');
 const apiRoutes = require('./src/routes/index');
-
+console.log("SERVER VERSION NEW");
 // INIT APP
 const app = express();
 

@@ -37,7 +37,7 @@ const getRecommendCourses = async (keyword) => {
     }
 };
 
-const getCourses = async (search, category, offset, limit) => {
+const getActiveCourses = async (search, category, offset, limit) => {
     try {
         const request = new sql.Request();
         request.input('offset', sql.Int, offset);
@@ -50,6 +50,7 @@ const getCourses = async (search, category, offset, limit) => {
         WHERE 
             (@search = '' OR title LIKE '%' + @search + '%')
             AND (@category IS NULL OR category_id = @category)
+            AND status = 'active'
         ORDER BY course_id
         OFFSET @offset ROWS
         FETCH NEXT @limit ROWS ONLY
@@ -60,7 +61,9 @@ const getCourses = async (search, category, offset, limit) => {
         throw new Error('Database error');
     }
 };
-const countCourses = async (search, category) => {
+
+
+const countActiveCourses = async (search, category) => {
     try {
         const request = new sql.Request();
         request.input('search', sql.NVarChar, search);
@@ -71,6 +74,7 @@ const countCourses = async (search, category) => {
         WHERE
             (@search = '' OR title LIKE '%' + @search + '%')
             AND (@category IS NULL OR category_id = @category)
+            AND status = 'active'
     `);
         return result.recordset[0].totalItems;
     } catch (err) {
@@ -96,8 +100,8 @@ const getCourseById = async (courseId) => {
 };
 
 module.exports = {
-    getCourses,
-    countCourses,
+    getActiveCourses,
+    countActiveCourses,
     getCourseById,
     getRecommendCourses
 };

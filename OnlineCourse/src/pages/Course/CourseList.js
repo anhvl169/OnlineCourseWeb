@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './CourseCard';
 import CourseCard from "./CourseCard";
 import CourseNav from "./CourseNav";
+import Pagination from "../../utils/Pagination";
 export default function CourseList() {
     const [courses, setCourses] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -90,7 +91,7 @@ export default function CourseList() {
     return (
         <div className="container py-5">
             {/* Header Section */}
-            <div className="row align-items-center mb-5">
+            <div className="row align-items-center mb-5 py-5">
                 <div className="col-md-6">
                     <h2 className="fw-bold mb-0">Khám phá khóa học</h2>
                     <p className="text-muted">Nâng cao kỹ năng với các chuyên gia hàng đầu</p>
@@ -99,7 +100,13 @@ export default function CourseList() {
                     <CourseNav categories={categories} onFilterChange={handleFilterChange} />
                 </div>
             </div>
-
+            <Pagination
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
+                hasNextPage={pagination.hasNextPage}
+                hasPrevPage={pagination.hasPrevPage}
+                onPageChange={(page) => setCurrentPage(page)}
+            />
             {/* Courses Grid */}
             <div className="row g-4">
                 {courses.length > 0 ? (
@@ -116,30 +123,13 @@ export default function CourseList() {
                 )}
             </div>
 
-            {/* Pagination Hiện đại */}
-            {pagination.totalPages > 1 && (
-                <nav className="mt-5">
-                    <ul className="pagination justify-content-center border-0">
-                        <li className={`page-item ${!pagination.hasPrevPage ? 'disabled' : ''}`}>
-                            <button className="page-link rounded-circle mx-1 border-0 shadow-sm" onClick={() => setCurrentPage(p => p - 1)}>
-                                <i className="bi bi-chevron-left"></i>
-                            </button>
-                        </li>
-                        {[...Array(pagination.totalPages)].map((_, i) => (
-                            <li key={i} className={`page-item ${currentPage === i + 1 ? 'active' : ''}`}>
-                                <button className="page-link rounded-circle mx-1 border-0 shadow-sm" onClick={() => setCurrentPage(i + 1)}>
-                                    {i + 1}
-                                </button>
-                            </li>
-                        ))}
-                        <li className={`page-item ${!pagination.hasNextPage ? 'disabled' : ''}`}>
-                            <button className="page-link rounded-circle mx-1 border-0 shadow-sm" onClick={() => setCurrentPage(p => p + 1)}>
-                                <i className="bi bi-chevron-right"></i>
-                            </button>
-                        </li>
-                    </ul>
-                </nav>
-            )}
+            <Pagination
+                currentPage={pagination.page}
+                totalPages={pagination.totalPages}
+                hasNextPage={pagination.hasNextPage}
+                hasPrevPage={pagination.hasPrevPage}
+                onPageChange={(page) => setCurrentPage(page)}
+            />
         </div>
     );
 }

@@ -86,4 +86,6 @@ const register = async ({ name, email, password }) => {
         token
     };
 };
+
+
 module.exports = { loginWithEmailAndPass, loginWithGoogle, register };

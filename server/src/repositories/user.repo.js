@@ -22,6 +22,22 @@ const findByEmail = async (email) => {
 
 };
 
+const findByResetToken = async (token) => {
+    try {
+        const result = await new sql.Request()
+            .input('token', sql.VarChar, token)
+            .query(`
+                SELECT *
+                FROM PasswordResets
+                WHERE token = @token
+            `);
+        return result.recordset[0];
+    } catch (err) {
+        console.error('Database error at findByResetToken:', err);
+        throw new Error('Database error');
+    }
+};
+
 const createUser = async (user) => {
     try {
         const result = await new sql.Request()
@@ -128,6 +144,22 @@ const updateUserProfile = async (userId, profileData) => {
     }
 };
 
+const updateUserPassword = async (userId, hashedPassword) => {
+    try {
+        await new sql.Request()
+            .input('userId', sql.Int, userId)
+            .input('password', sql.VarChar, hashedPassword)
+            .query(`
+                UPDATE Users 
+                SET password = @password
+                WHERE user_id = @userId
+            `);
+    } catch (err) {
+        console.error('Database error at updateUserPassword:', err);
+        throw new Error('Database error');
+    }
+};
+
 const getEnrolledCourses = async (userId) => {
     try {
         const result = await new sql.Request()
@@ -212,6 +244,45 @@ const getInvoiceItems = async (invoiceId) => {
     }
 };
 
+const passWordReset = async (userId, resetData) => {
+    try {
+        await new sql.Request()
+            .input('userId', sql.Int, userId)
+            .input('resetToken', sql.VarChar, resetData.resetToken)
+            .input('resetTokenExpiresAt', sql.DateTime, resetData.resetTokenExpiresAt)
+            .query(`            
+            INSERT INTO PasswordResets (
+                userId,
+                token,
+                expiresAt
+            )
+            VALUES (
+                @userId,
+                @resetToken,
+                @resetTokenExpiresAt
+            )`);
+        return true;
+    } catch (err) {
+        console.error('Database error at passWordReset:', err);
+        throw new Error('Database error');
+    }
+};
+
+const setTokenUsed = async (resetId) => {
+    try {
+        await new sql.Request()
+            .input('resetId', sql.Int, resetId)
+            .query(`
+                UPDATE PasswordResets
+                SET isUsed = 1
+                WHERE id = @resetId
+            `);
+    } catch (err) {
+        console.error('Database error at setTokenUsed:', err);
+        throw new Error('Database error');
+    }
+};
+
 module.exports = {
     findByEmail,
     createUser,
@@ -222,5 +293,9 @@ module.exports = {
     getEnrolledCourses,
     getUserInvoices,
     getInvoiceItems,
-    getPublicUserProfile
+    getPublicUserProfile,
+    findByResetToken,
+    passWordReset,
+    updateUserPassword,
+    setTokenUsed
 };

@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ProtectedRoute from './routes/ProtectedRoute';
 import Login from './pages/Login/Login';
 import Register from './pages/Register/Register';
+import ForgotPassword from './pages/ResetPassword/ForgotPassword';
 import AuthCallbackPage from './pages/Login/AuthCallbackPage';
 //course
 import CourseList from './pages/Course/CourseList';
@@ -28,6 +29,7 @@ import ChatPage from './pages/Chat/ChatPage';
 //dashboard
 import StudentInCourse from './components/Dashboard/StudentInCourse';
 import CourseByTeacher from './components/Dashboard/CourseByTeacher';
+import NewPassword from './pages/ResetPassword/ResetPassword';
 
 function App() {
   return (
@@ -46,7 +48,8 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/auth/callback" element={<AuthCallbackPage />} />
-
+            <Route path="/forgot-password" element={<Layout><ForgotPassword /></Layout>} />
+            <Route path="/new-password/:token" element={<Layout><NewPassword isReset={true} /></Layout>} />
             {/* payment */}
             <Route
               path="/cart"

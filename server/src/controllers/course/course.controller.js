@@ -35,8 +35,8 @@ const getAllCourses = async (req, res) => {
 
         const offset = calculateOffset(page, limit);
 
-        const courses = await courseRepo.getCourses(search, category, offset, limit);
-        const totalItems = await courseRepo.countCourses(search, category);
+        const courses = await courseRepo.getActiveCourses(search, category, offset, limit);
+        const totalItems = await courseRepo.countActiveCourses(search, category);
         const pagination = createPagination(page, limit, totalItems);
 
         res.json({
@@ -49,6 +49,7 @@ const getAllCourses = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 };
+
 const getAllInstructors = async (req, res) => {
     try {
 

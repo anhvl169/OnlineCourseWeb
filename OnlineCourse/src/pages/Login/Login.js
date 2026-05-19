@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -7,14 +7,13 @@ import { useNavigate, Link } from "react-router-dom";
 import './login.css';
 
 export default function Login() {
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const email = useRef("");
+    const password = useRef("");
     const navigate = useNavigate();
-
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post("http://localhost:5000/api/auth/login", { email, password });
+            const res = await axios.post("http://localhost:5000/api/auth/login", { email: email.current.value, password: password.current.value });
             const token = res.data.token;
             localStorage.setItem("token", token);
             const user = jwtDecode(token);
@@ -25,9 +24,8 @@ export default function Login() {
             else navigate("/");
         } catch (err) {
             alert("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!");
-        }
-    };
-
+        };
+    }
     return (
         <div className="auth-wrapper d-flex align-items-center justify-content-center">
             <div className="card auth-card shadow-lg border-0 p-4">
@@ -46,7 +44,7 @@ export default function Login() {
                                 className="form-control bg-light border-start-0 shadow-none"
                                 placeholder="name@example.com"
                                 required
-                                onChange={e => setEmail(e.target.value)}
+                                ref={email}
                             />
                         </div>
                     </div>
@@ -60,7 +58,7 @@ export default function Login() {
                                 className="form-control bg-light border-start-0 shadow-none"
                                 placeholder="••••••••"
                                 required
-                                onChange={e => setPassword(e.target.value)}
+                                ref={password}
                             />
                         </div>
                     </div>
@@ -68,6 +66,10 @@ export default function Login() {
                     <button type="submit" className="btn btn-primary w-100 fw-bold py-2 mb-3 rounded-pill">
                         ĐĂNG NHẬP
                     </button>
+                    <div className="text-center">
+                        <span className="text-muted">Bạn quên mật khẩu?</span>
+                        <Link to="/forgot-password" className="text-primary fw-bold text-decoration-none">Khôi phục mật khẩu</Link>
+                    </div>
                 </form>
 
                 <div className="divider d-flex align-items-center my-4">

@@ -1,10 +1,12 @@
-import jwt_decode from "jwt-decode";
+// import jwt_decode from "jwt-decode";
+const jwt_decode = require("jwt-decode");
+const crypto = require("crypto");
 
-export const getToken = () => {
+const getToken = () => {
     return localStorage.getItem("token");
 };
 
-export const getUser = () => {
+const getUser = () => {
     const token = getToken();
     if (!token) return null;
 
@@ -15,13 +17,28 @@ export const getUser = () => {
     }
 };
 
-export const isAuthenticated = () => {
+const isAuthenticated = () => {
     return !!getToken();
 };
 
-export const hasRole = (roles) => {
+const hasRole = (roles) => {
     const user = getUser();
     if (!user) return false;
 
     return roles.includes(user.role);
+};
+
+const generateResetToken = () => {
+
+    return crypto
+        .randomBytes(32)
+        .toString("hex");
+};
+
+module.exports = {
+    getToken,
+    getUser,
+    isAuthenticated,
+    hasRole,
+    generateResetToken
 };

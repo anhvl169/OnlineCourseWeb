@@ -17,7 +17,7 @@ const createPaymentLinkRoute = require('./payment/CollectionLink');
 const cartRoutes = require('./service/cart.route');
 const chatRoutes = require('./service/chat.route');
 
-
+const aiRoutes = require('./ai/ai.route');
 
 const router = express.Router();
 
@@ -31,6 +31,7 @@ router.use('/courses', courseRoutes);
 router.use('/users', userRoutes);
 router.use('/payment', createPaymentLinkRoute);
 router.use('/chat', chatRoutes);
+router.use('/ai', aiRoutes);
 
 const { authMiddleware } = require('../middlewares/verifyToken');
 router.get('/profile', authMiddleware, (req, res) => {

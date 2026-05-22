@@ -1,5 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
-import { AuthContext } from "../../context/AuthContext";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useChat, ChatProvider } from "../../context/ChatContext";
 const UserProfile = () => {
@@ -95,10 +94,10 @@ const UserProfile = () => {
 
                             <div className="row g-4">
                                 {[
-                                    { label: "Họ và tên", name: "name", value: profile.name, type: "text", disabled: true  },
+                                    { label: "Họ và tên", name: "name", value: profile.name, type: "text", disabled: true },
                                     { label: "Email Address", name: "email", value: profile.email, type: "email", disabled: true },
-                                    { label: "Số điện thoại", name: "phone", value: profile.phone, type: "tel" , disabled: true },
-                                    { label: "Địa chỉ", name: "address", value: profile.address, type: "text" , disabled: true }
+                                    { label: "Số điện thoại", name: "phone", value: profile.phone, type: "tel", disabled: true },
+                                    { label: "Địa chỉ", name: "address", value: profile.address, type: "text", disabled: true }
                                 ].map((field) => (
                                     <div className="col-md-6" key={field.name}>
                                         <label className="small text-muted fw-bold text-uppercase">{field.label}</label>

@@ -5,14 +5,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { AuthContext } from "../../context/AuthContext";
 import { useContext } from "react";
-import { getUserFromToken } from "../../utils/authUtils";
+
 export default function Cart() {
     const { cart, total, loading, removeFromCart } = useCart();
     const navigate = useNavigate();
     const [paymentMethod, setPaymentMethod] = useState("momo");
-    const { user } = useContext(AuthContext);
-    const tokenUser = getUserFromToken();
-    const currentUser = user || tokenUser;
+
     const handleRemove = async (cartItemId) => {
         const result = await removeFromCart(cartItemId);
         if (!result.success) alert(result.message);
@@ -49,7 +47,7 @@ export default function Cart() {
                     {/* LEFT - CART ITEMS */}
                     <div className="col-md-8">
                         {cart.map(item => (
-                            <div key={item.cart_item_id} className="card mb-3 shadow-sm border-0 transition-hover">
+                            <div key={item.cart_item_id} className="card mb-3 shadow-sm border-0 transition-hover" data-testid={`cart-item-${item.course_id}`}>
                                 <div className="row g-0 align-items-center">
                                     <div className="col-md-3">
                                         <img src={item.imgUrl} className="img-fluid rounded-start h-100 w-100 object-fit-cover"
@@ -63,7 +61,10 @@ export default function Cart() {
                                         </div>
                                     </div>
                                     <div className="col-md-3 text-center text-md-end pe-md-4">
-                                        <button className="btn btn-sm btn-outline-danger border-0" onClick={() => handleRemove(item.cart_item_id)}>
+                                        <button className="btn btn-sm btn-outline-danger border-0"
+                                            onClick={() => handleRemove(item.cart_item_id)}
+                                            data-testid={`remove-course-${item.course_id}`}
+                                        >
                                             <i className="bi bi-trash3 me-1"></i> Xóa
                                         </button>
                                     </div>

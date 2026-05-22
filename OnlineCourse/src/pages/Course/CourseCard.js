@@ -19,7 +19,7 @@ export default function CourseCard({ course, instructors, categories }) {
     };
 
     return (
-        <div className="card h-100 course-card border-0 shadow-sm transition-hover">
+        <div className="card h-100 course-card border-0 shadow-sm transition-hover" data-testid={`course-card-${course.course_id}`}>
             <div className="position-relative">
                 <img
                     src={course.imgUrl || "https://via.placeholder.com/300x200"}
@@ -48,6 +48,7 @@ export default function CourseCard({ course, instructors, categories }) {
                     <div className="btn-group shadow-sm">
                         <button
                             className="btn btn-outline-primary btn-sm px-3"
+                            data-testid={`view-details-button-${course.course_id}`}
                             onClick={() => navigate(`/courses/detail/${course.course_id}`)}
                         >
                             Chi tiết
@@ -55,6 +56,7 @@ export default function CourseCard({ course, instructors, categories }) {
                         {course.status === 'active' && (
                             <button
                                 className="btn btn-primary btn-sm px-3"
+                                data-testid={`add-to-cart-button-${course.course_id}`}
                                 onClick={() => handleAddCart(course.course_id, course.price, course.title, course.imgUrl)}
                             >
                                 <i className="bi bi-cart-plus"></i>

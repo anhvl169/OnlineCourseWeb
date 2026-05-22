@@ -76,6 +76,7 @@ export default function CourseDetail() {
                                     </button>
                                     <button className="btn btn-warning btn-lg w-100 fw-bold rounded-pill"
                                         type="button"
+                                        data-testid="add-to-cart-button"
                                         onClick={() => handleAddCart(course.course_id, course.price, course.title, course.imgUrl)}>
                                         Add to Cart
                                     </button>

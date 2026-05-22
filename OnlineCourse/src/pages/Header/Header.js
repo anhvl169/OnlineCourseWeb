@@ -58,10 +58,10 @@ export default function Header() {
 
                         {/* Right Icons & Auth */}
                         <div className="d-flex align-items-center ms-auto">
-                            <Link to="/cart" className="nav-link position-relative me-4">
+                            <Link to="/cart" className="nav-link position-relative me-4" data-testid="cart-link">
                                 <i className="bi bi-cart3 fs-4"></i>
                                 {cart.length > 0 && (
-                                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                    <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" data-testid="cart-badge">
                                         {cart.length}
                                     </span>
                                 )}

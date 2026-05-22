@@ -1,4 +1,4 @@
-import { getUserFromToken, getUserRole } from "../../utils/authUtils";
+import { getUserFromToken } from "../../utils/authUtils";
 import CourseByTeacher from "../../components/Dashboard/CourseByTeacher";
 import StudentInCourse from "../../components/Dashboard/StudentInCourse";
 import { useState } from "react";

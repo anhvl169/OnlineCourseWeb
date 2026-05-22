@@ -1,4 +1,4 @@
-import { useRef, useContext } from "react";
+import { useRef, useContext, useEffect } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
@@ -11,9 +11,15 @@ export default function Login() {
     const password = useRef("");
     const navigate = useNavigate();
     const { login, user } = useContext(AuthContext);
-    if (user) {
-        navigate("/");
-    }
+
+    useEffect(() => {
+
+        if (user) {
+            navigate("/");
+        }
+
+    }, [user, navigate]);
+    
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
@@ -69,9 +75,9 @@ export default function Login() {
                         </div>
                     </div>
 
-                    <button type="submit" 
-                    data-testid="login-button"
-                    className="btn btn-primary w-100 fw-bold py-2 mb-3 rounded-pill">
+                    <button type="submit"
+                        data-testid="login-button"
+                        className="btn btn-primary w-100 fw-bold py-2 mb-3 rounded-pill">
                         ĐĂNG NHẬP
                     </button>
                     <div className="text-center">

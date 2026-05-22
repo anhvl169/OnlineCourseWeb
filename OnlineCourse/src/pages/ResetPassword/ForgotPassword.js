@@ -1,9 +1,7 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 import axios from "axios";
 export default function ResetPassword() {
     const email = useRef("");
-    const navigate = useNavigate();
     const [message, setMessage] = useState("");
     const handleReset = async (e) => {
         e.preventDefault();

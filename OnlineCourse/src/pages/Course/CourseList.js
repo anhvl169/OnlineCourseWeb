@@ -85,8 +85,6 @@ export default function CourseList() {
         setSelectedCategory(selectedCategory);
     };
 
-    // Filter courses based on search term and selected category
-    const filteredCourses = courses;
 
     return (
         <div className="container py-5">

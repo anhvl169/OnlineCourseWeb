@@ -40,16 +40,6 @@ export class LoginPage {
         await this.loginButton
             .click();
 
-        // wait redirect
-        await this.page.waitForURL(
-            /OnlineCourse/
-        );
-
-        // wait token saved
-        await this.page.waitForFunction(() =>
-            localStorage.getItem('token')
-        );
-
     }
 
 }

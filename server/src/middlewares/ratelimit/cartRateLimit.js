@@ -1,13 +1,35 @@
-const rateLimit = require("express-rate-limit");
+const rateLimit =
+    require("express-rate-limit");
 
-const cartRateLimit = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100,
-    message: {
-        message: "Quá nhiều request, vui lòng thử lại sau"
-    },
-});
+if (
+    process.env.NODE_ENV === 'test'
+) {
 
-module.exports = {
-    cartRateLimit
-};
+    console.log(
+        'Test environment: cart rate limit disabled'
+    );
+
+    module.exports = {
+
+        cartRateLimit:
+            (req, res, next) => next(),
+
+    };
+
+} else {
+
+    const cartRateLimit =
+        rateLimit({
+            windowMs: 15 * 60 * 1000,
+            max: 100,
+            message: {
+                message:
+                    "Quá nhiều request, vui lòng thử lại sau"
+            },
+        });
+
+    module.exports = {
+        cartRateLimit,
+    };
+
+}

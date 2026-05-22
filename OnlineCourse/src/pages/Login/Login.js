@@ -1,21 +1,25 @@
-import { useState, useRef } from "react";
+import { useRef, useContext } from "react";
 import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import { jwtDecode } from "jwt-decode";
 import { useNavigate, Link } from "react-router-dom";
 import './login.css';
-
+import { AuthContext } from "../../context/AuthContext";
 export default function Login() {
     const email = useRef("");
     const password = useRef("");
     const navigate = useNavigate();
+    const { login, user } = useContext(AuthContext);
+    if (user) {
+        navigate("/");
+    }
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
             const res = await axios.post("http://localhost:5000/api/auth/login", { email: email.current.value, password: password.current.value });
             const token = res.data.token;
-            localStorage.setItem("token", token);
+            login(token);
             const user = jwtDecode(token);
             localStorage.setItem("user", JSON.stringify(user));
 
@@ -41,6 +45,7 @@ export default function Login() {
                             <span className="input-group-text bg-light border-end-0"><i className="bi bi-envelope text-muted"></i></span>
                             <input
                                 type="email"
+                                data-testid="email-input"
                                 className="form-control bg-light border-start-0 shadow-none"
                                 placeholder="name@example.com"
                                 required
@@ -55,6 +60,7 @@ export default function Login() {
                             <span className="input-group-text bg-light border-end-0"><i className="bi bi-lock text-muted"></i></span>
                             <input
                                 type="password"
+                                data-testid="password-input"
                                 className="form-control bg-light border-start-0 shadow-none"
                                 placeholder="••••••••"
                                 required
@@ -63,7 +69,9 @@ export default function Login() {
                         </div>
                     </div>
 
-                    <button type="submit" className="btn btn-primary w-100 fw-bold py-2 mb-3 rounded-pill">
+                    <button type="submit" 
+                    data-testid="login-button"
+                    className="btn btn-primary w-100 fw-bold py-2 mb-3 rounded-pill">
                         ĐĂNG NHẬP
                     </button>
                     <div className="text-center">
@@ -80,6 +88,7 @@ export default function Login() {
 
                 <button
                     className="btn btn-outline-dark w-100 d-flex align-items-center justify-content-center py-2 rounded-pill mb-4"
+                    data-testid="google-login-button"
                     onClick={() => window.location.href = "http://localhost:5000/api/auth/google"}
                 >
                     <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg"

@@ -15,7 +15,16 @@ const aiRateLimitPerDay = rateLimit({
     },
 });
 
+const aiRateLimitPerWeek = rateLimit({
+    windowMs: 7 * 24 * 60 * 60 * 1000,
+    max: 500,
+    message: {
+        message: "Quá nhiều request, vui lòng thử lại sau"
+    },
+});
+
 module.exports = {
     aiRateLimitPerMinute,
-    aiRateLimitPerDay
+    aiRateLimitPerDay,
+    aiRateLimitPerWeek
 };

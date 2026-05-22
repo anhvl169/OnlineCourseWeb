@@ -1,0 +1,29 @@
+{
+  "cookies": [
+    {
+      "name": "WMF-Uniq",
+      "value": "kwDmLnCsdTrcSWIXIrMCVwNoAAAAAFvdioFDN79HOza1ol0Ua3WjjKfVbhD2nVlE",
+      "domain": ".upload.wikimedia.org",
+      "path": "/",
+      "expires": 1810984086.310739,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "http://localhost:3000",
+      "localStorage": [
+        {
+          "name": "token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsIm5hbWUiOiJBZG1pbiBVc2VyIiwicm9sZXMiOlsiQWRtaW4iLCJUZWFjaGVyIl0sImlhdCI6MTc3OTQ2NjQ3NSwiZXhwIjoxNzgwMDcxMjc1fQ.Xdg_jGEjPWLVzkxraH6HL5S6_mqXztXvkyJ7EkNFNu8"
+        },
+        {
+          "name": "user",
+          "value": "{\"userId\":1,\"name\":\"Admin User\",\"roles\":[\"Admin\",\"Teacher\"],\"iat\":1779466475,\"exp\":1780071275}"
+        }
+      ]
+    }
+  ]
+}

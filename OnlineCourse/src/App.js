@@ -34,7 +34,7 @@ import NewPassword from './pages/ResetPassword/ResetPassword';
 function App() {
   return (
     <div className="App">
-      <BrowserRouter>
+      <BrowserRouter basename="/OnlineCourse">
         <AppProvider>
           <Routes>
 

@@ -2,18 +2,18 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css'; // Nên cài thêm gói này
 import './Header.css';
 import { Link, useNavigate } from 'react-router-dom';
-import { logout } from "../../utils/authUtils";
 import { useCart } from "../../context/CartContext";
 import { AuthContext } from "../../context/AuthContext";
 import { useEffect, useContext } from "react";
 
 export default function Header() {
-    const { user } = useContext(AuthContext);
+    const { user, logout } = useContext(AuthContext);
 
     const currentUser = user;
     const { cart } = useCart();
     const navigate = useNavigate();
     const logoutHandler = () => {
+
         logout();
         navigate('/login');
     };
@@ -69,7 +69,11 @@ export default function Header() {
 
                             {currentUser ? (
                                 <div className="dropdown">
-                                    <button className="btn btn-light dropdown-toggle d-flex align-items-center border shadow-sm" type="button" data-bs-toggle="dropdown">
+                                    <button className="btn btn-light dropdown-toggle d-flex align-items-center border shadow-sm"
+                                        type="button"
+                                        data-bs-toggle="dropdown"
+                                        data-testid="user-menu-button"
+                                    >
                                         <div className="avatar-sm me-2">{currentUser.name?.charAt(0)}</div>
                                         <span className="d-none d-md-inline">{currentUser.name}</span>
                                     </button>
@@ -82,11 +86,17 @@ export default function Header() {
                                             <li><Link className="dropdown-item py-2 text-primary" to="/teachers">Giảng viên</Link></li>
                                         )}
                                         <li><hr className="dropdown-divider" /></li>
-                                        <li><button className="dropdown-item py-2 text-danger" onClick={logoutHandler}>Đăng xuất</button></li>
+                                        <li><button className="dropdown-item py-2 text-danger"
+                                            onClick={logoutHandler}
+                                            data-testid="logout-button"
+                                        >Đăng xuất</button></li>
                                     </ul>
                                 </div>
                             ) : (
-                                <Link className="btn btn-primary px-4 rounded-pill shadow-sm" to="/login">Đăng nhập</Link>
+                                <Link className="btn btn-primary px-4 rounded-pill shadow-sm"
+                                    to="/login"
+                                    data-testid="login-button"
+                                >Đăng nhập</Link>
                             )}
                         </div>
                     </div>

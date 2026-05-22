@@ -1,4 +1,3 @@
-// context/AuthContext.js
 import { createContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 
@@ -8,17 +7,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        let token = localStorage.getItem("token");
-
-        if (!token) {
-            const params = new URLSearchParams(window.location.search);
-            token = params.get("token");
-
-            if (token) {
-                localStorage.setItem("token", token);
-                window.history.replaceState({}, document.title, window.location.pathname);
-            }
-        }
+        const token = localStorage.getItem("token");
 
         if (token) {
             try {
@@ -31,8 +20,31 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    const login = (token) => {
+        localStorage.setItem("token", token);
+
+        try {
+            const decoded = jwtDecode(token);
+            setUser(decoded);
+        } catch (err) {
+            console.error("Invalid token", err);
+        }
+    };
+
+    const logout = () => {
+        localStorage.removeItem("token");
+        setUser(null);
+    };
+
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                setUser,
+                login,
+                logout
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
